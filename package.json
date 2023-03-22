@@ -57,6 +57,7 @@
     "typescript": "^5.0.2"
   },
   "dependencies": {
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jest-cucumber": "^3.0.1"
   }
