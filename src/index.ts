@@ -1,19 +1,19 @@
+import * as core from 'express-serve-static-core';
 /* eslint-disable no-console */
 // eslint-disable-next-line no-console
 import express from 'express';
-import dotenv from 'dotenv';
+import { NODE_PORT } from './setting';
+import routes from './endpoints';
+import bodyParser from 'body-parser';
 
-//-----NODE ENV------
-const PRODUCTION = 'production';
+const app: core.Express = express();
+const port = NODE_PORT || 3000;
 
-if (process.env.NODE_ENV !== PRODUCTION) {
-  dotenv.config();
-}
-console.log('NODE_ENV:', process.env.NODE_ENV);
-//-----NODE ENV------
-
-const app = express();
-const port = process.env.NODE_PORT || 3000;
+// const router = express.Router();
+app.use(bodyParser.json()); //application/json
+//app.use('/', router);
+//Routing
+routes(app);
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
