@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable-next-line no-console */
+/* eslint-disable no-console */
 import { PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
@@ -7,9 +7,11 @@ import * as path from 'path';
 import { extractTar } from '../helpers/files.helper';
 import { computeIntegrity } from '../helpers/hash';
 import { getContent, getPackageJson } from '../helpers/pilet.helper';
-import { PiletService } from '../service/pilet.service';
-import { TAR_DIR_NAME, UPLOAD_TMP_DIR_NAME } from '../setting';
+import { PiletService } from '../services/pilet.service';
+import { TGZ_OUTPUT__DIRECTORY, UPLOADS__DIRECTORY } from '../setting';
 import { PackageData } from '../types';
+import { storeFile } from '../providers/storage.provider';
+import { PiletVersionWithPilet } from '../types/model';
 
 const prisma = new PrismaClient();
 
@@ -31,7 +33,7 @@ const publishPiletController = async (
     const file = req.file;
     const filePath = file.path;
 
-    const extractPath = `${UPLOAD_TMP_DIR_NAME}/${TAR_DIR_NAME}`;
+    const extractPath = `${UPLOADS__DIRECTORY}/${TGZ_OUTPUT__DIRECTORY}`;
 
     try {
       extractTar(filePath)
@@ -56,6 +58,7 @@ const publishPiletController = async (
               link,
             );
 
+            await storeFile(pV as PiletVersionWithPilet);
             deleteTmpFiles(extractPath, filePath);
 
             res.status(200).json({
@@ -105,7 +108,7 @@ const seveInLocalStorage = async (
 
   if (packageData) {
     const { version, name, main } = packageData;
-    const destinationPath = `${UPLOAD_TMP_DIR_NAME}/${name}/${version}`;
+    const destinationPath = `${UPLOADS__DIRECTORY}/${name}/${version}`;
 
     if (fs.existsSync(destinationPath)) {
       //Delete Old Path

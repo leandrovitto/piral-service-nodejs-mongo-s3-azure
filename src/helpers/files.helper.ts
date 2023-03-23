@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import * as tar from 'tar';
 import * as zlib from 'zlib';
 import { Writable } from 'stream';
-import { UPLOAD_TMP_DIR_NAME } from '../setting';
+import { UPLOADS__DIRECTORY } from '../setting';
 
 const extractTar = (
   readPath: string,
-  extractPath = UPLOAD_TMP_DIR_NAME,
+  extractPath = UPLOADS__DIRECTORY,
 ): Writable => {
   const stream = fs
     .createReadStream(readPath)

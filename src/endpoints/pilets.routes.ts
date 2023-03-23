@@ -5,7 +5,7 @@ import {
   publishPiletController,
 } from '../controllers/pilets.controller';
 import multer from 'multer';
-import { UPLOAD_TMP_DIR_NAME } from '../setting';
+import { UPLOADS__DIRECTORY } from '../setting';
 
 const router = express.Router();
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get(`/`, getPiletsController);
 
 // POST PILET
-const upload = multer({ dest: UPLOAD_TMP_DIR_NAME + '/' });
+const upload = multer({ dest: UPLOADS__DIRECTORY + '/' });
 const cpUpload = upload.single('file');
 router.post(`/`, [cpUpload], publishPiletController);
 

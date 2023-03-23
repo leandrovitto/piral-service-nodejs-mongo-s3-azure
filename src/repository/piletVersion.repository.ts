@@ -1,11 +1,12 @@
-import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
-import { FULL_URL, UPLOAD_TMP_DIR_NAME } from '../setting';
+import { Pilet, PiletVersion, Prisma, PrismaClient } from '@prisma/client';
 
 class PiletVersionRepository {
   //constructor(parameters) {}
   client = new PrismaClient();
 
-  create = async (payload: Omit<PiletVersion, 'id'>): Promise<PiletVersion> => {
+  create = async (
+    payload: Omit<PiletVersion, 'id'>,
+  ): Promise<PiletVersion & { pilet: Pilet }> => {
     try {
       const p = await this.client.piletVersion.create({
         data: {
@@ -17,6 +18,9 @@ class PiletVersionRepository {
           spec: payload.spec,
           link: payload.link,
           enabled: payload.enabled,
+        },
+        include: {
+          pilet: true,
         },
       });
       // eslint-disable-next-line no-console
@@ -63,7 +67,7 @@ class PiletVersionRepository {
     });
   };
 
-  getPiletsVersion = async (): Promise<unknown[] | null> => {
+  getPiletsVersion = async (linkToAttach = ''): Promise<unknown[] | null> => {
     const xprisma = this.client.$extends({
       result: {
         piletVersion: {
@@ -72,7 +76,7 @@ class PiletVersionRepository {
               link: true,
             },
             compute(pV) {
-              const link = `${FULL_URL}/${UPLOAD_TMP_DIR_NAME}/${pV.link}`;
+              const link = `${linkToAttach}${pV.link}`;
               return link;
             },
           },

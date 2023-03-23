@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import { PackageData } from '../types';
+import { PACKAGE_JSON__FILE } from '../setting';
 
 const getPackageJson = (path: string): PackageData => {
   try {
-    const fileName = `package.json`;
+    const fileName = PACKAGE_JSON__FILE;
     const data = fs.readFileSync(`${path}/${fileName}`, {
       encoding: 'utf8',
       flag: 'r',

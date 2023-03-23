@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface PiletMetadataV0 {
   /**
    * The content of the pilet. If the content is not available

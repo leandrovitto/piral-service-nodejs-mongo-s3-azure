@@ -12,20 +12,42 @@ console.log('NODE_ENV:', NODE_ENV);
 
 const NODE_PORT = ENV.NODE_PORT || 3000;
 //----------------------
-const TAR_DIR_NAME = 'package';
-const UPLOAD_TMP_DIR_NAME = 'files';
+const UPLOADS__DIRECTORY = 'uploads';
+const TGZ_OUTPUT__DIRECTORY = 'package';
+const BUILD_OUTPUT__DIRECTORY = 'dist';
+const PACKAGE_JSON__FILE = 'package.json';
 
 const HOST = ENV.WEBSITE_HOSTNAME || `localhost:${NODE_PORT}`;
 const PROTOCOL = ENV.HTTP_X_FORWARDED_PROTO || 'http';
 const FULL_URL = `${PROTOCOL}://${HOST}`;
 
+const storage = {
+  provider: ENV.STORAGE_PROVIDER ? ENV.STORAGE_PROVIDER : 'local', // 'local', 'aws', 'azure'
+  localSettings: {
+    bucket: 'files',
+  },
+  awsSettings: {
+    accessKeyId: ENV.S3_USER_KEY,
+    secretAccessKey: ENV.S3_USER_SECRET,
+    bucket: ENV.S3_BUCKET_NAME,
+  },
+  azureSettings: {
+    accessKeyId: ENV.AZURE_USER_KEY,
+    secretAccessKey: ENV.AZURE_USER_SECRET,
+    bucket: ENV.AZURE_BUCKET_NAME,
+  },
+};
+
 export {
+  storage,
   HOST,
   PROTOCOL,
   FULL_URL,
   NODE_ENV,
   NODE_PORT,
   PRODUCTION,
-  TAR_DIR_NAME,
-  UPLOAD_TMP_DIR_NAME,
+  TGZ_OUTPUT__DIRECTORY,
+  UPLOADS__DIRECTORY,
+  BUILD_OUTPUT__DIRECTORY,
+  PACKAGE_JSON__FILE,
 };

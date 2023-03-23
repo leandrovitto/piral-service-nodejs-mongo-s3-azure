@@ -1,13 +1,28 @@
-/* eslint-disable-next-line no-console */
-import { PiletVersion } from '@prisma/client';
+/* eslint-disable no-console */
+import { Pilet, PiletVersion } from '@prisma/client';
 import { PiletRepository } from '../repository/pilet.repository';
 import { PiletVersionRepository } from '../repository/piletVersion.repository';
+import { FULL_URL, storage } from '../setting';
+import { Providers } from '../types/providers.enum';
 
 class PiletService {
   getPiletsVersion = async () => {
     try {
       const piletRepo = new PiletVersionRepository();
-      const pilets = await piletRepo.getPiletsVersion();
+
+      const provider: string = storage.provider;
+      let linkToAttach = '';
+      switch (provider) {
+        case Providers.LOCAL:
+          linkToAttach = `${FULL_URL}/${storage.localSettings.bucket}`;
+          break;
+        case Providers.AWS:
+        case Providers.AZURE:
+        default:
+          break;
+      }
+
+      const pilets = await piletRepo.getPiletsVersion(linkToAttach);
       return pilets;
     } catch (error) {
       throw `Error get pilets version!`;
@@ -20,7 +35,7 @@ class PiletService {
     main: string,
     integrity: string,
     link: string,
-  ): Promise<PiletVersion | null> => {
+  ): Promise<(PiletVersion & { pilet: Pilet }) | null> => {
     const piletRepo = new PiletRepository();
     const piletVRepo = new PiletVersionRepository();
 
@@ -55,7 +70,7 @@ class PiletService {
 
       await piletVRepo.disabledOthersPiletVersion(pV.id, pilet.id);
 
-      return pV;
+      return pV as PiletVersion & { pilet: Pilet };
     } else {
       throw `Pack with name:${piletName}, version ${version} exist! Please increase version!`;
     }

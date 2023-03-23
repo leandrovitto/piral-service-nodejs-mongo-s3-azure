@@ -1,12 +1,10 @@
-import * as core from 'express-serve-static-core';
 /* eslint-disable no-console */
-// eslint-disable-next-line no-console
+import * as core from 'express-serve-static-core';
 import express from 'express';
 import routes from './endpoints';
-import { NODE_PORT, UPLOAD_TMP_DIR_NAME } from './setting';
+import { NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
 import cors from 'cors';
 import responseTime from 'response-time';
-//import bodyParser from 'body-parser';
 
 const app: core.Express = express();
 const port = NODE_PORT || 3000;
@@ -22,21 +20,12 @@ app.use(cors(corsOpts));
 app.use(express.json());
 app.use(responseTime());
 
-app.use(`/${UPLOAD_TMP_DIR_NAME}`, express.static(UPLOAD_TMP_DIR_NAME));
+app.use(`/${UPLOADS__DIRECTORY}`, express.static(UPLOADS__DIRECTORY));
+app.use(
+  `/${storage.localSettings.bucket}`,
+  express.static(storage.localSettings.bucket),
+);
 
-//app.use(bodyParser.json());
-
-/* app.use(
-  cors({
-    origin: '*',
-
-    credentials: true,
-    optionsSuccessStatus: 200,
-  }),
-); */
-//app.use(express.urlencoded({ extended: true }));
-
-//app.use('/', router);
 //Routing
 routes(app);
 
