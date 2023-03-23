@@ -1,14 +1,23 @@
 import * as fs from 'fs';
-import { PackageData, PackageFiles } from '../types';
+import { PackageData } from '../types';
 
 const getPackageJson = (path: string): PackageData => {
-  const fileName = `package.json`;
-  const data = fs.readFileSync(`${path}/${fileName}`, 'utf8');
-  return JSON.parse(data);
+  try {
+    const fileName = `package.json`;
+    const data = fs.readFileSync(`${path}/${fileName}`, {
+      encoding: 'utf8',
+      flag: 'r',
+    });
+    return JSON.parse(data);
+  } catch (e) {
+    throw 'LOG::packages.json miss!';
+  }
 };
 
 const getContent = (path: string, fileName: string) => {
-  const data = fs.readFileSync(`${path}/${fileName}`, 'utf8');
+  const data = fs.readFileSync(`${path}/${fileName}`, {
+    encoding: 'utf8',
+  });
   return data.toString();
 };
 
@@ -29,4 +38,4 @@ const extractPiletMetadata = (
   };
 };
 
-export { extractPiletMetadata, getPackageJson, getContent };
+export { extractPiletMetadata, getContent, getPackageJson };

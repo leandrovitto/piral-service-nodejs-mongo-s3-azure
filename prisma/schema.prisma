@@ -18,9 +18,18 @@ model Pilet {
   id    Int     @id @default(autoincrement())
   name  String  @unique
   meta  Json?
+  enabled Boolean @default(true)
+  piletVersion PiletVersion[]
+}
+
+model PiletVersion {
+  id    Int     @id @default(autoincrement())
+  pilet Pilet   @relation(fields: [piletId], references: [id])
+  piletId  Int
+  meta  Json?
   version String?
   root  String?
   integrity  String?
   spec  String? @default("v2")
-  visible Boolean @default(false)
+  enabled Boolean @default(false)
 }

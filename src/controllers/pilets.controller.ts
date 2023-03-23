@@ -1,24 +1,25 @@
-import * as fs from 'fs';
-import * as tar from 'tar';
-import * as zlib from 'zlib';
-import path from 'path';
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Prisma, PrismaClient } from '@prisma/client';
+/* eslint-disable-next-line no-console */
+import * as fs from 'fs';
+import { PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { computeIntegrity } from '../helpers/hash';
 import {
   extractPiletMetadata,
   getContent,
   getPackageJson,
 } from '../helpers/pilet.helper';
-import { FULL_URL, TAR_DIR_NAME, UPLOAD_TMP_DIR_NAME } from '../setting';
-import { Writable } from 'stream';
-import { computeIntegrity } from '../helpers/hash';
+import { TAR_DIR_NAME, UPLOAD_TMP_DIR_NAME } from '../setting';
 import { PackageData } from '../types';
+import { extractTar } from '../helpers/files.helper';
+import { PiletRepository } from '../repository/pilet.repository';
+import { PiletVersionRepository } from '../repository/piletVersion.repository';
+import { PiletService } from '../service/pilet.service';
 
 const prisma = new PrismaClient();
 
 const getPilets = async (req: Request, res: Response, next: NextFunction) => {
-  const xprisma = prisma.$extends({
+  /* const xprisma = prisma.$extends({
     result: {
       pilet: {
         link: {
@@ -30,16 +31,33 @@ const getPilets = async (req: Request, res: Response, next: NextFunction) => {
         },
       },
     },
-  });
+  }); */
 
-  const pilets = await xprisma.pilet.findMany({
+  const pilets = await prisma.piletVersion.findMany({
+    distinct: ['piletId'],
     orderBy: {
-      id: 'asc',
+      version: 'desc',
     },
     where: {
-      visible: true,
+      enabled: true,
+      pilet: {
+        enabled: true,
+      },
+    },
+    select: {
+      id: true,
+      piletId: true,
+      version: true,
+      integrity: true,
+      spec: true,
+      pilet: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
+
   res.json({ items: pilets });
 };
 
@@ -54,98 +72,51 @@ const publishPilet = async (
 
     const extractPath = `${UPLOAD_TMP_DIR_NAME}/${TAR_DIR_NAME}`;
 
-    // Delete old extractPath
-    //fs.rmSync(extractPath, { recursive: true, force: true });
-    //fs.mkdirSync(extractPath);
-
-    extractTar(filePath)
-      .on('close', () => {
-        const packageData = getPackageJson(extractPath);
-
-        if (packageData) {
-          const { version, name, main } = packageData;
-          const destinationPath = `${UPLOAD_TMP_DIR_NAME}/${name}/${version}`;
-
-          if (fs.existsSync(destinationPath)) {
-            //Delete Old Path
-            deleteTmpFiles(extractPath, filePath);
-            return res.status(400).json({
-              success: false,
-              message: 'Directory Exist!',
-            });
-          }
-
-          // eslint-disable-next-line no-useless-catch
+    try {
+      extractTar(filePath)
+        .on('close', async () => {
           try {
-            fs.mkdirSync(destinationPath, { recursive: true });
-            fs.renameSync(extractPath + '/dist', destinationPath);
-            fs.renameSync(
-              extractPath + '/package.json',
-              destinationPath + '/package.json',
-            );
-            //fs.renameSync(extractPath, destinationPath);
-            // eslint-disable-next-line no-console
-            console.log('Successfully moved the file!');
-            //fs.renameSync(destinationPath + '/dist', destinationPath);
+            const packageData = getPackageJson(extractPath);
+            const { version, name, main } = packageData;
 
-            //Delete Old Path
+            const mainContent = main ? getContent(extractPath, main) : '';
+            const integrity = computeIntegrity(mainContent);
+
+            const service = new PiletService();
+
+            const pV = await service.createAndActivateNewPiletAndPiletVersion(
+              name,
+              version,
+              main ? main : '',
+              integrity,
+            );
+
             deleteTmpFiles(extractPath, filePath);
-            saveInformationIntoDB(destinationPath, packageData);
-            // eslint-disable-next-line no-console
-            console.log('Record write in DB');
 
             res.status(200).json({
-              file: packageData.version,
+              data: pV,
               success: true,
             });
           } catch (err) {
+            console.error(err);
+
+            deleteTmpFiles(extractPath, filePath);
+
             res.status(400).json({
               success: false,
               message: err,
             });
           }
-        }
-
-        const newPathWithVersion = `${file.destination}${packageData.name}/${packageData.version}`;
-
-        /*  const currentPath = path.join(__dirname, 'your-file.png');
-        const newPath = path.join(__dirname, 'your-directory', 'your-file.png'); */
-
-        //Delete Old Path
-        /* 
-        fs.rmSync(`${file.destination}${packageData.name}`, {
-          recursive: true,
-          force: true,
+        })
+        .on('error', (err) => {
+          throw err;
         });
-        fs.rmSync(newPathWithVersion, { recursive: true, force: true });
-        fs.mkdirSync(`${file.destination}${packageData.name}`);
-        fs.mkdirSync(newPathWithVersion); */
-
-        /* extractTar(path, newPathWithVersion)
-          .on('close', () => {
-            fs.rmSync(extractPath, { recursive: true, force: true });
-            fs.rmSync(path);
-            saveInformationIntoDB(`${newPathWithVersion}/${TAR_DIR_NAME}`);
-            res.status(200).json({
-              file: packageData.version,
-              success: true,
-            });
-          })
-          .on('error', (err) => {
-            fs.rmSync(extractPath, { recursive: true, force: true });
-            fs.rmSync(path);
-            res.status(400).json({
-              success: false,
-              message: err,
-            });
-          }); */
-      })
-      .on('error', (err) => {
-        res.status(400).json({
-          success: false,
-          message: err,
-        });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err,
       });
+    }
   }
 };
 
@@ -158,53 +129,55 @@ const deleteTmpFiles = (path: string, filePath: string) => {
   fs.rmSync(filePath);
 };
 
-const extractTar = (
-  readPath: string,
-  extractPath = UPLOAD_TMP_DIR_NAME,
-): Writable => {
-  const stream = fs
-    .createReadStream(readPath)
-    .pipe(zlib.createGunzip())
-    .pipe(tar.extract({ cwd: extractPath }));
-  return stream;
-};
-
-const saveInformationIntoDB = async (
-  path: string,
+const seveInLocalStorage = async (
+  extractPath: string,
+  filePath: string,
   packageData: PackageData,
 ) => {
-  //console.log(path);
-  const meta = extractPiletMetadata(packageData, path);
+  // Delete old extractPath
+  //fs.rmSync(extractPath, { recursive: true, force: true });
+  //fs.mkdirSync(extractPath);
 
   if (packageData) {
-    const { main, name, version } = packageData;
-    const mainContent = main ? getContent(path, 'index.js') : '';
-    const integrity = computeIntegrity(mainContent);
+    const { version, name, main } = packageData;
+    const destinationPath = `${UPLOAD_TMP_DIR_NAME}/${name}/${version}`;
 
+    if (fs.existsSync(destinationPath)) {
+      //Delete Old Path
+      deleteTmpFiles(extractPath, filePath);
+      /* return res.status(400).json({
+        success: false,
+        message: 'Directory Exist!',
+      }); */
+    }
+
+    // eslint-disable-next-line no-useless-catch
     try {
-      await prisma.pilet.create({
-        data: {
-          name: name,
-          meta: meta,
-          version: version,
-          root: main,
-          integrity: integrity,
-          visible: true,
-        },
-      });
+      fs.mkdirSync(destinationPath, { recursive: true });
+      fs.renameSync(extractPath + '/dist', destinationPath);
+      fs.renameSync(
+        extractPath + '/package.json',
+        destinationPath + '/package.json',
+      );
+      //fs.renameSync(extractPath, destinationPath);
+      // eslint-disable-next-line no-console
+      console.log('Successfully moved the file!');
+      //fs.renameSync(destinationPath + '/dist', destinationPath);
+
+      //Delete Old Path
+      deleteTmpFiles(extractPath, filePath);
       // eslint-disable-next-line no-console
       console.log('Record write in DB');
-    } catch (e) {
-      if (e instanceof Prisma.PrismaClientKnownRequestError) {
-        // The .code property can be accessed in a type-safe manner
-        if (e.code === 'P2002') {
-          // eslint-disable-next-line no-console
-          console.log(
-            'There is a unique constraint violation, a new user cannot be created with this name',
-          );
-        }
-      }
-      throw e;
+
+      /* res.status(200).json({
+        file: packageData.version,
+        success: true,
+      }); */
+    } catch (err) {
+      /* res.status(400).json({
+        success: false,
+        message: err,
+      }); */
     }
   }
 };
