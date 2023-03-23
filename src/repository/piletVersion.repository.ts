@@ -1,4 +1,5 @@
 import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
+import { FULL_URL, UPLOAD_TMP_DIR_NAME } from '../setting';
 
 class PiletVersionRepository {
   //constructor(parameters) {}
@@ -14,6 +15,7 @@ class PiletVersionRepository {
           root: payload.root,
           integrity: payload.integrity,
           spec: payload.spec,
+          link: payload.link,
           enabled: payload.enabled,
         },
       });
@@ -59,6 +61,52 @@ class PiletVersionRepository {
         },
       },
     });
+  };
+
+  getPiletsVersion = async (): Promise<unknown[] | null> => {
+    const xprisma = this.client.$extends({
+      result: {
+        piletVersion: {
+          link: {
+            needs: {
+              link: true,
+            },
+            compute(pV) {
+              const link = `${FULL_URL}/${UPLOAD_TMP_DIR_NAME}/${pV.link}`;
+              return link;
+            },
+          },
+        },
+      },
+    });
+
+    const pilets = await xprisma.piletVersion.findMany({
+      distinct: ['piletId'],
+      orderBy: {
+        version: 'desc',
+      },
+      where: {
+        enabled: true,
+        pilet: {
+          enabled: true,
+        },
+      },
+      select: {
+        id: true,
+        piletId: true,
+        version: true,
+        integrity: true,
+        spec: true,
+        link: true,
+        pilet: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return pilets;
   };
 }
 

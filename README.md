@@ -8,5 +8,6 @@ For other database connection, like 'mongodb' change provider in prisma/schema.p
 
 Run this command to create migration and table in your database
 ```
-npx prisma migrate dev --name init
+npm run migrate
+npx prisma generate
 ```

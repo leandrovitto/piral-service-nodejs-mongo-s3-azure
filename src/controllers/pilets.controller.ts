@@ -1,67 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable-next-line no-console */
-import * as fs from 'fs';
 import { PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+import { extractTar } from '../helpers/files.helper';
 import { computeIntegrity } from '../helpers/hash';
-import {
-  extractPiletMetadata,
-  getContent,
-  getPackageJson,
-} from '../helpers/pilet.helper';
+import { getContent, getPackageJson } from '../helpers/pilet.helper';
+import { PiletService } from '../service/pilet.service';
 import { TAR_DIR_NAME, UPLOAD_TMP_DIR_NAME } from '../setting';
 import { PackageData } from '../types';
-import { extractTar } from '../helpers/files.helper';
-import { PiletRepository } from '../repository/pilet.repository';
-import { PiletVersionRepository } from '../repository/piletVersion.repository';
-import { PiletService } from '../service/pilet.service';
 
 const prisma = new PrismaClient();
 
-const getPilets = async (req: Request, res: Response, next: NextFunction) => {
-  /* const xprisma = prisma.$extends({
-    result: {
-      pilet: {
-        link: {
-          needs: { version: true, root: true, name: true },
-          compute(pilet) {
-            const fileName = path.basename(pilet.root as string);
-            return `${FULL_URL}/${UPLOAD_TMP_DIR_NAME}/${pilet.name}/${pilet.version}/${fileName}`;
-          },
-        },
-      },
-    },
-  }); */
-
-  const pilets = await prisma.piletVersion.findMany({
-    distinct: ['piletId'],
-    orderBy: {
-      version: 'desc',
-    },
-    where: {
-      enabled: true,
-      pilet: {
-        enabled: true,
-      },
-    },
-    select: {
-      id: true,
-      piletId: true,
-      version: true,
-      integrity: true,
-      spec: true,
-      pilet: {
-        select: {
-          name: true,
-        },
-      },
-    },
-  });
-
-  res.json({ items: pilets });
+const getPiletsController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  const service = new PiletService();
+  res.json({ items: await service.getPiletsVersion() });
 };
 
-const publishPilet = async (
+const publishPiletController = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -84,11 +45,15 @@ const publishPilet = async (
 
             const service = new PiletService();
 
+            const fileName = path.basename(main as string);
+            const link = `/${name}/${version}/${fileName}`;
+
             const pV = await service.createAndActivateNewPiletAndPiletVersion(
               name,
               version,
               main ? main : '',
               integrity,
+              link,
             );
 
             deleteTmpFiles(extractPath, filePath);
@@ -182,4 +147,4 @@ const seveInLocalStorage = async (
   }
 };
 
-export { getPilets, publishPilet };
+export { getPiletsController, publishPiletController };

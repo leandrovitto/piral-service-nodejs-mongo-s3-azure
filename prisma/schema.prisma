@@ -30,6 +30,7 @@ model PiletVersion {
   version String?
   root  String?
   integrity  String?
+  link  String?
   spec  String? @default("v2")
   enabled Boolean @default(false)
 }

@@ -4,11 +4,22 @@ import { PiletRepository } from '../repository/pilet.repository';
 import { PiletVersionRepository } from '../repository/piletVersion.repository';
 
 class PiletService {
+  getPiletsVersion = async () => {
+    try {
+      const piletRepo = new PiletVersionRepository();
+      const pilets = await piletRepo.getPiletsVersion();
+      return pilets;
+    } catch (error) {
+      throw `Error get pilets version!`;
+    }
+  };
+
   createAndActivateNewPiletAndPiletVersion = async (
     piletName: string,
     version: string,
     main: string,
     integrity: string,
+    link: string,
   ): Promise<PiletVersion | null> => {
     const piletRepo = new PiletRepository();
     const piletVRepo = new PiletVersionRepository();
@@ -38,6 +49,7 @@ class PiletService {
         root: main,
         integrity: integrity,
         spec: 'v2',
+        link: link,
         enabled: true,
       });
 
