@@ -1,0 +1,26 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+model Pilet {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  meta  Json?
+  version String?
+  root  String?
+  integrity  String?
+  spec  String? @default("v2")
+  visible Boolean @default(false)
+}
