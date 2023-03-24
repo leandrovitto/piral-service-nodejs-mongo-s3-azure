@@ -27,9 +27,13 @@ const storage = {
     bucket: 'files',
   },
   awsSettings: {
-    accessKeyId: ENV.S3_USER_KEY,
-    secretAccessKey: ENV.S3_USER_SECRET,
-    bucket: ENV.S3_BUCKET_NAME,
+    directory: 'files',
+    accessKeyId: ENV.AWS_ACCESS_KEY_ID,
+    secretAccessKey: ENV.AWS_SECRET_ACCESS_KEY,
+    region: ENV.AWS_S3_DEFAULT_REGION,
+    bucket: ENV.AWS_S3_BUCKET || '',
+    url: ENV.AWS_S3_URL,
+    acl: ENV.AWS_S3_ACL || 'public-read', //'public-read'
   },
   azureSettings: {
     accessKeyId: ENV.AZURE_USER_KEY,

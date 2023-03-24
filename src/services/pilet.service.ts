@@ -17,6 +17,8 @@ class PiletService {
           linkToAttach = `${FULL_URL}/${storage.localSettings.bucket}`;
           break;
         case Providers.AWS:
+          linkToAttach = `${storage.awsSettings.url}/${storage.awsSettings.directory}`;
+          break;
         case Providers.AZURE:
         default:
           break;
