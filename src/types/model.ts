@@ -1,7 +1,5 @@
 import { Pilet, PiletVersion } from '@prisma/client';
 
-interface PiletVersionWithPilet extends PiletVersion {
-  pilet: Pilet;
-}
+type PiletVersionWithPilet = PiletVersion & { pilet: Pilet };
 
 export { PiletVersionWithPilet };

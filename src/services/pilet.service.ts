@@ -1,33 +1,25 @@
 /* eslint-disable no-console */
-import { Pilet, PiletVersion } from '@prisma/client';
 import { PiletRepository } from '../repository/pilet.repository';
 import { PiletVersionRepository } from '../repository/piletVersion.repository';
-import { FULL_URL, storage } from '../setting';
-import { Providers } from '../types/providers.enum';
+import { PiletVersionWithPilet } from '../types/model';
 
 class PiletService {
-  getPiletsVersion = async () => {
+  getPiletsVersion = async (): Promise<PiletVersionWithPilet[]> => {
     try {
-      const piletRepo = new PiletVersionRepository();
-
-      const provider: string = storage.provider;
-      let linkToAttach = '';
-      switch (provider) {
-        case Providers.LOCAL:
-          linkToAttach = `${FULL_URL}/${storage.localSettings.bucket}`;
-          break;
-        case Providers.AWS:
-          linkToAttach = `${storage.awsSettings.url}/${storage.awsSettings.directory}`;
-          break;
-        case Providers.AZURE:
-        default:
-          break;
-      }
-
-      const pilets = await piletRepo.getPiletsVersion(linkToAttach);
+      const piletVRepo = new PiletVersionRepository();
+      const pilets = await piletVRepo.findManyDistinctPiletsVersion();
       return pilets;
     } catch (error) {
       throw `Error get pilets version!`;
+    }
+  };
+
+  updatePiletVersionEnabled = async (id: number, enabled = true) => {
+    try {
+      const piletVRepo = new PiletVersionRepository();
+      await piletVRepo.updatePiletVersionEnabled(id, enabled);
+    } catch (error) {
+      throw `Error update pilet version enabled!`;
     }
   };
 
@@ -37,7 +29,7 @@ class PiletService {
     main: string,
     integrity: string,
     link: string,
-  ): Promise<(PiletVersion & { pilet: Pilet }) | null> => {
+  ): Promise<PiletVersionWithPilet | null> => {
     const piletRepo = new PiletRepository();
     const piletVRepo = new PiletVersionRepository();
 
@@ -67,12 +59,12 @@ class PiletService {
         integrity: integrity,
         spec: 'v2',
         link: link,
-        enabled: true,
+        enabled: false,
       });
 
       await piletVRepo.disabledOthersPiletVersion(pV.id, pilet.id);
 
-      return pV as PiletVersion & { pilet: Pilet };
+      return pV as PiletVersionWithPilet;
     } else {
       throw `Pack with name:${piletName}, version ${version} exist! Please increase version!`;
     }

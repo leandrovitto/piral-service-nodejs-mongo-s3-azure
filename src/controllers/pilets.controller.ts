@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
-import { PrismaClient } from '@prisma/client';
+import { Pilet, PiletVersion, PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { extractTar } from '../helpers/files.helper';
 import { computeIntegrity } from '../helpers/hash';
 import { getContent, getPackageJson } from '../helpers/pilet.helper';
+import { mapperPiletsVersion } from '../mapper/piletVersion.mapper';
+import { storeFile } from '../providers/storage.provider';
 import { PiletService } from '../services/pilet.service';
 import { TGZ_OUTPUT__DIRECTORY, UPLOADS__DIRECTORY } from '../setting';
 import { PackageData } from '../types';
-import { storeFile } from '../providers/storage.provider';
 import { PiletVersionWithPilet } from '../types/model';
 
 const prisma = new PrismaClient();
@@ -21,7 +22,12 @@ const getPiletsController = async (
   next: NextFunction,
 ) => {
   const service = new PiletService();
-  res.json({ items: await service.getPiletsVersion() });
+
+  const items: PiletVersionWithPilet[] = await service.getPiletsVersion();
+
+  const i = mapperPiletsVersion(items);
+
+  res.json({ items: i });
 };
 
 const publishPiletController = async (
@@ -60,6 +66,10 @@ const publishPiletController = async (
 
             await storeFile(pV as PiletVersionWithPilet);
             deleteTmpFiles(extractPath, filePath);
+
+            await service.updatePiletVersionEnabled(
+              (pV as PiletVersionWithPilet).id,
+            );
 
             res.status(200).json({
               data: pV,

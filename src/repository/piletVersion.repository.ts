@@ -1,4 +1,5 @@
-import { Pilet, PiletVersion, Prisma, PrismaClient } from '@prisma/client';
+import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
+import { PiletVersionWithPilet } from '../types/model';
 
 class PiletVersionRepository {
   //constructor(parameters) {}
@@ -6,7 +7,7 @@ class PiletVersionRepository {
 
   create = async (
     payload: Omit<PiletVersion, 'id'>,
-  ): Promise<PiletVersion & { pilet: Pilet }> => {
+  ): Promise<PiletVersionWithPilet> => {
     try {
       const p = await this.client.piletVersion.create({
         data: {
@@ -67,24 +68,21 @@ class PiletVersionRepository {
     });
   };
 
-  getPiletsVersion = async (linkToAttach = ''): Promise<unknown[] | null> => {
-    const xprisma = this.client.$extends({
-      result: {
-        piletVersion: {
-          link: {
-            needs: {
-              link: true,
-            },
-            compute(pV) {
-              const link = `${linkToAttach}${pV.link}`;
-              return link;
-            },
-          },
-        },
+  updatePiletVersionEnabled = async (id: number, enabled = true) => {
+    await this.client.piletVersion.update({
+      data: {
+        enabled: enabled,
+      },
+      where: {
+        id: id,
       },
     });
+  };
 
-    const pilets = await xprisma.piletVersion.findMany({
+  findManyDistinctPiletsVersion = async (): Promise<
+    PiletVersionWithPilet[]
+  > => {
+    const pilets = await this.client.piletVersion.findMany({
       distinct: ['piletId'],
       orderBy: {
         version: 'desc',
@@ -95,18 +93,8 @@ class PiletVersionRepository {
           enabled: true,
         },
       },
-      select: {
-        id: true,
-        piletId: true,
-        version: true,
-        integrity: true,
-        spec: true,
-        link: true,
-        pilet: {
-          select: {
-            name: true,
-          },
-        },
+      include: {
+        pilet: true,
       },
     });
 
