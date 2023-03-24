@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import { PiletRepository } from '../repository/pilet.repository';
 import { PiletVersionRepository } from '../repository/piletVersion.repository';
+import { PILET_VERSION } from '../setting';
 import { PiletVersionWithPilet } from '../types/model';
 
 class PiletService {
@@ -20,6 +21,15 @@ class PiletService {
       await piletVRepo.updatePiletVersionEnabled(id, enabled);
     } catch (error) {
       throw `Error update pilet version enabled!`;
+    }
+  };
+
+  deletePiletVersion = async (id: number) => {
+    try {
+      const piletVRepo = new PiletVersionRepository();
+      await piletVRepo.deletePiletVersion(id);
+    } catch (error) {
+      throw `Error delete pilet version!`;
     }
   };
 
@@ -57,16 +67,16 @@ class PiletService {
         version: version,
         root: main,
         integrity: integrity,
-        spec: 'v2',
+        spec: PILET_VERSION,
         link: link,
-        enabled: false,
+        enabled: true,
       });
 
       await piletVRepo.disabledOthersPiletVersion(pV.id, pilet.id);
 
       return pV as PiletVersionWithPilet;
     } else {
-      throw `Pack with name:${piletName}, version ${version} exist! Please increase version!`;
+      throw `Pilet with name:${piletName}, version ${version} exist! Please increase version!`;
     }
   };
 }

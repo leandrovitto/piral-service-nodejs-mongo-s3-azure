@@ -16,6 +16,7 @@ const UPLOADS__DIRECTORY = 'uploads';
 const TGZ_OUTPUT__DIRECTORY = 'package';
 const BUILD_OUTPUT__DIRECTORY = 'dist';
 const PACKAGE_JSON__FILE = 'package.json';
+const PILET_VERSION = ENV.PILET_VERSION || 'v3';
 
 const HOST = ENV.WEBSITE_HOSTNAME || `localhost:${NODE_PORT}`;
 const PROTOCOL = ENV.HTTP_X_FORWARDED_PROTO || 'http';
@@ -54,4 +55,5 @@ export {
   UPLOADS__DIRECTORY,
   BUILD_OUTPUT__DIRECTORY,
   PACKAGE_JSON__FILE,
+  PILET_VERSION,
 };

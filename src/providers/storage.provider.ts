@@ -11,11 +11,11 @@ const providers: Record<string, Function> = {
   azure: azureStorageProvider,
 };
 
-export async function storeFile(pilet: PiletVersionWithPilet) {
+export const storeFile = async (pilet: PiletVersionWithPilet) => {
   const provider: string = storage.provider;
-
   const invoker = providers[provider];
+
   if (invoker) {
-    invoker(pilet);
+    await invoker(pilet);
   }
-}
+};

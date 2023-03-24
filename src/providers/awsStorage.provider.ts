@@ -1,6 +1,10 @@
 /* eslint-disable no-useless-catch */
 /* eslint-disable no-console */
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import {
   BUILD_OUTPUT__DIRECTORY,
@@ -13,17 +17,17 @@ import { PiletVersionWithPilet } from '../types/model';
 import * as mimeTypes from 'mime-types';
 
 const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
-  const destinationPath = `${UPLOADS__DIRECTORY}/${pilet.pilet.name}/${pilet.version}`;
-  const extractPath = `${UPLOADS__DIRECTORY}/${TGZ_OUTPUT__DIRECTORY}`;
-
-  if (fs.existsSync(destinationPath)) {
-    fs.rmSync(destinationPath, {
-      recursive: true,
-      force: true,
-    });
-  }
-
   try {
+    const destinationPath = `${UPLOADS__DIRECTORY}/${pilet.pilet.name}/${pilet.version}`;
+    const extractPath = `${UPLOADS__DIRECTORY}/${TGZ_OUTPUT__DIRECTORY}`;
+
+    if (fs.existsSync(destinationPath)) {
+      fs.rmSync(destinationPath, {
+        recursive: true,
+        force: true,
+      });
+    }
+
     fs.mkdirSync(destinationPath, { recursive: true });
     fs.renameSync(`${extractPath}/${BUILD_OUTPUT__DIRECTORY}`, destinationPath);
     fs.renameSync(
@@ -33,7 +37,7 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
 
     const s3Client = new S3Client({ region: storage.awsSettings.region });
 
-    console.log(`Uploading files from ${destinationPath}\n`);
+    console.log(`Uploading files from ${destinationPath} to AWS S3\n`);
     const keys = fs.readdirSync(destinationPath);
 
     const files = keys.map((key) => {
@@ -50,23 +54,34 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
       } catch (error) {}
     });
 
+    let errorTrack = null;
+
     for (const file of files) {
       if (file) {
         const destination = `${storage.awsSettings.directory}/${pilet.pilet.name}/${pilet.version}/${file.Key}`;
-        await s3Client.send(
-          new PutObjectCommand({
-            Bucket: storage.awsSettings.bucket,
-            Body: file.Body,
-            Key: destination,
-            ContentDisposition: 'inline',
-            ContentType: mimeTypes.lookup(file.Key) as string,
-            ACL: storage.awsSettings.acl,
-          }),
-        );
-        console.log(`${file.Key} uploaded successfully.`);
+        try {
+          await s3Client.send(
+            new PutObjectCommand({
+              Bucket: storage.awsSettings.bucket,
+              Body: file.Body,
+              Key: destination,
+              ContentDisposition: 'inline',
+              ContentType: mimeTypes.lookup(file.Key) as string,
+              ACL: storage.awsSettings.acl,
+            }),
+          );
+          console.log(`${file.Key} uploaded successfully.`);
+        } catch (error) {
+          console.log(`${file.Key} uploaded error.`);
+          errorTrack = error;
+        }
       }
     }
-  } catch (err) {
+    if (errorTrack) throw errorTrack;
+  } catch (err: unknown) {
+    if (err instanceof S3ServiceException) {
+      throw err.message;
+    }
     throw err;
   }
 };

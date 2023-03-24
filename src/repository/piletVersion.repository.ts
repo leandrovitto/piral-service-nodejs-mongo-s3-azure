@@ -79,6 +79,14 @@ class PiletVersionRepository {
     });
   };
 
+  deletePiletVersion = async (id: number) => {
+    await this.client.piletVersion.delete({
+      where: {
+        id: id,
+      },
+    });
+  };
+
   findManyDistinctPiletsVersion = async (): Promise<
     PiletVersionWithPilet[]
   > => {
