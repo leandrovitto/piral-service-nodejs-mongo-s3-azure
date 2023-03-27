@@ -34,3 +34,8 @@ model PiletVersion {
   spec  String? @default("v2")
   enabled Boolean @default(false)
 }
+
+model Keys {
+  id    Int     @id @default(autoincrement())
+  key String  @unique
+}

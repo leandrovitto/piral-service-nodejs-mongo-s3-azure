@@ -23,7 +23,7 @@ const PROTOCOL = ENV.HTTP_X_FORWARDED_PROTO || 'http';
 const FULL_URL = `${PROTOCOL}://${HOST}`;
 
 const storage = {
-  provider: ENV.STORAGE_PROVIDER ? ENV.STORAGE_PROVIDER : 'local', // 'local', 'aws', 'azure'
+  provider: ENV.STORAGE_PROVIDER ? ENV.STORAGE_PROVIDER : 'local', // local | aws | azure
   localSettings: {
     bucket: 'files',
   },
@@ -44,8 +44,24 @@ const storage = {
   },
 };
 
+// crypto.createHash('sha256').update(Math.random().toString()).digest().toString('hex')
+const generatedKeys = [
+  '779baae4ade607786c6cdbfc47b55dcbf2d7c519ddf29ffd0087b7c2c604715c',
+  'ad647bdc23b7437b8fa8f27c3e2d3f70fbb493c53e9160e07d37a98df333b188',
+  'c2d98c4869b06f23cb1e82a1f87008e3b47ce6276aad0648f51223334fa5dd30',
+  'f4016914386b30c733e03ca76a36a0c45406fbda4e66be1c6af63dc908a3c075',
+  '1848113284a55529e1c0d60de12e3d50e721d8ff189d96d474aa9101ead1d034',
+];
+
+const authKeys = {
+  provider: ENV.KEYS_PROVIDER || 'local', // local | env || database
+  envKeys: ENV.KEYS || '',
+  defaultKeys: generatedKeys,
+};
+
 export {
   storage,
+  authKeys,
   HOST,
   PROTOCOL,
   FULL_URL,

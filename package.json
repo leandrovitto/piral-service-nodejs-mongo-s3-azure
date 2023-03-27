@@ -19,7 +19,8 @@
     "test": "jest",
     "test:dev": "jest --watchAll",
     "prepare": "husky install",
-    "prisma:migrate": "npx prisma migrate dev --name init && npx prisma generate"
+    "prisma:migrate": "npx prisma migrate dev --name init && npx prisma generate",
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "repository": {
     "type": "git",

@@ -1,10 +1,11 @@
 /* eslint-disable no-console */
-import * as core from 'express-serve-static-core';
-import express from 'express';
-import routes from './endpoints';
-import { NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
 import cors from 'cors';
+import express from 'express';
+import * as core from 'express-serve-static-core';
 import responseTime from 'response-time';
+import routes from './endpoints';
+import { FULL_URL, NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
+import { KeyService } from './services/keys.service';
 
 const app: core.Express = express();
 const port = NODE_PORT || 3000;
@@ -34,5 +35,15 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  return console.log(`Express is listening at http://localhost:${port}`);
+  return console.log(`Express is listening at ${FULL_URL}`);
 });
+
+const showKeys = async () => {
+  const keyService = new KeyService();
+  const keys = await keyService.getKeys();
+  console.log('\nAuth Keys:');
+  keys.map((k) => console.log(k));
+  console.log('\n');
+};
+
+showKeys();

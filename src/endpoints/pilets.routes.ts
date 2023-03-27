@@ -6,6 +6,7 @@ import {
 } from '../controllers/pilets.controller';
 import multer from 'multer';
 import { UPLOADS__DIRECTORY } from '../setting';
+import { checkAuth } from '../middleware/auth.middleware';
 
 const router = express.Router();
 
@@ -15,7 +16,7 @@ router.get(`/`, getPiletsController);
 // POST PILET
 const upload = multer({ dest: UPLOADS__DIRECTORY + '/' });
 const cpUpload = upload.single('file');
-router.post(`/`, [cpUpload], publishPiletController);
+router.post(`/`, [checkAuth(), cpUpload], publishPiletController);
 
 ///EXPORT
 const piletRoutes = router;
