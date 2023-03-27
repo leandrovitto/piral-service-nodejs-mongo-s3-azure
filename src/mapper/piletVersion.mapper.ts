@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { Pilet, PiletVersion } from '@prisma/client';
 import { FULL_URL, storage } from '../setting';
-import { StorageProviders } from '../types/providers.enum';
+import { StorageProviders } from '../types/storageProviders.enum';
 import { PiletVersionWithPilet } from '../types/model';
 
 const mapperPiletsVersion = (items: PiletVersionWithPilet[]) => {

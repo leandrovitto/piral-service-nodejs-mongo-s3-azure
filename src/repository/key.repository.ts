@@ -1,4 +1,4 @@
-import { Keys, Prisma, PrismaClient } from '@prisma/client';
+import { Keys, PrismaClient } from '@prisma/client';
 
 class KeyRepository {
   client = new PrismaClient();
