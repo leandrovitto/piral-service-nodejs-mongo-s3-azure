@@ -35,6 +35,8 @@ const mapperPiletVersion = (piletVersion: PiletVersionWithPilet) => {
       linkToAttach = `${storage.awsSettings.url}/${storage.awsSettings.directory}`;
       break;
     case Providers.AZURE:
+      linkToAttach = `${storage.azureSettings.url}/${storage.azureSettings.containerName}`;
+      break;
     default:
       break;
   }

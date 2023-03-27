@@ -37,9 +37,10 @@ const storage = {
     acl: ENV.AWS_S3_ACL || 'public-read', //'public-read'
   },
   azureSettings: {
-    accessKeyId: ENV.AZURE_USER_KEY,
-    secretAccessKey: ENV.AZURE_USER_SECRET,
-    bucket: ENV.AZURE_BUCKET_NAME,
+    connectionString: ENV.AZURE_CONNECTION_STRING || '',
+    containerName: ENV.AZURE_CONTAINER_NAME || 'files',
+    url: ENV.AZURE_URL,
+    acl: ENV.AZURE_ACCESS_TYPE || 'blob', //'public-read'
   },
 };
 

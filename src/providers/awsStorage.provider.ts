@@ -16,6 +16,8 @@ import {
 import { PiletVersionWithPilet } from '../types/model';
 import * as mimeTypes from 'mime-types';
 
+const awsSettings = storage.awsSettings;
+
 const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
   try {
     const destinationPath = `${UPLOADS__DIRECTORY}/${pilet.pilet.name}/${pilet.version}`;
@@ -35,7 +37,7 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
       `${destinationPath}/${PACKAGE_JSON__FILE}`,
     );
 
-    const s3Client = new S3Client({ region: storage.awsSettings.region });
+    const s3Client = new S3Client({ region: awsSettings.region });
 
     console.log(`Uploading files from ${destinationPath} to AWS S3\n`);
     const keys = fs.readdirSync(destinationPath);
@@ -58,16 +60,16 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
 
     for (const file of files) {
       if (file) {
-        const destination = `${storage.awsSettings.directory}/${pilet.pilet.name}/${pilet.version}/${file.Key}`;
+        const destination = `${awsSettings.directory}/${pilet.pilet.name}/${pilet.version}/${file.Key}`;
         try {
           await s3Client.send(
             new PutObjectCommand({
-              Bucket: storage.awsSettings.bucket,
+              Bucket: awsSettings.bucket,
               Body: file.Body,
               Key: destination,
               ContentDisposition: 'inline',
               ContentType: mimeTypes.lookup(file.Key) as string,
-              ACL: storage.awsSettings.acl,
+              ACL: awsSettings.acl,
             }),
           );
           console.log(`${file.Key} uploaded successfully.`);
