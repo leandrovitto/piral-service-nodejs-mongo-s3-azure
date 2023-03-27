@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import { Pilet, PiletVersion } from '@prisma/client';
 import { FULL_URL, storage } from '../setting';
-import { Providers } from '../types/providers.enum';
+import { StorageProviders } from '../types/providers.enum';
 import { PiletVersionWithPilet } from '../types/model';
 
 const mapperPiletsVersion = (items: PiletVersionWithPilet[]) => {
@@ -28,13 +28,13 @@ const mapperPiletVersion = (piletVersion: PiletVersionWithPilet) => {
   const provider: string = storage.provider;
   let linkToAttach = '';
   switch (provider) {
-    case Providers.LOCAL:
+    case StorageProviders.LOCAL:
       linkToAttach = `${FULL_URL}/${storage.localSettings.bucket}`;
       break;
-    case Providers.AWS:
+    case StorageProviders.AWS:
       linkToAttach = `${storage.awsSettings.url}/${storage.awsSettings.directory}`;
       break;
-    case Providers.AZURE:
+    case StorageProviders.AZURE:
       linkToAttach = `${storage.azureSettings.url}/${storage.azureSettings.containerName}`;
       break;
     default:
