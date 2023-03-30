@@ -1,9 +1,10 @@
+import { prismaClient } from './../index';
 /* eslint-disable no-useless-catch */
-import { Pilet, PrismaClient } from '@prisma/client';
+import { Pilet } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
 
 class PiletRepository {
-  client = new PrismaClient();
+  client = prismaClient;
 
   create = async (payload: Omit<Pilet, 'id' | 'enabled'>): Promise<Pilet> => {
     try {

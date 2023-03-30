@@ -31,7 +31,7 @@
   </td>
   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
   <div class="inline-flex gap-4">
-      <form method="post" action="/pilets/{{ piletV.piletId }}/trigger">
+      <form method="post" action="/admin/pilets/{{ piletV.piletId }}/trigger">
         {% if piletV.pilet.enabled %}
             {% render 'ui/button.liquid', type: 'danger', title : 'Disabled' %}
         {% else %}
@@ -39,9 +39,9 @@
         {% endif %}
       </form>
 
-      <form method="get" action="/pilets/{{ piletV.piletId }}/versions">
+      <a href="/admin/pilets/{{ piletV.piletId }}/versions">
           {% render 'ui/button.liquid',title : 'View Versions' %}
-      </form>
+      </a>
 
   </div>
   </td>

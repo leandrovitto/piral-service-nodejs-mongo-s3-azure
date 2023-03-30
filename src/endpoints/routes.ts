@@ -9,4 +9,19 @@ const PILETS = '/pilets';
 const VERSIONS = '/versions';
 const TRIGGER = '/trigger';
 
-export { ROOT, API, V1, PILET, PILETS, VERSIONS, TRIGGER };
+const ADMIN = '/admin';
+const LOGIN = '/login';
+const LOGOUT = '/logout';
+
+export {
+  ROOT,
+  ADMIN,
+  API,
+  V1,
+  PILET,
+  PILETS,
+  VERSIONS,
+  TRIGGER,
+  LOGIN,
+  LOGOUT,
+};

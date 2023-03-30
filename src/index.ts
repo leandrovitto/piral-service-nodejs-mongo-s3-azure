@@ -7,9 +7,14 @@ import routes from './endpoints';
 import { KeyService } from './services/keys.service';
 import { FULL_URL, NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
 import { logger } from './helpers';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import { PrismaClient } from '@prisma/client';
 
 const app: core.Express = express();
 const port = NODE_PORT || 3000;
+
+export const prismaClient = new PrismaClient();
 
 const corsOpts = {
   origin: '*',
@@ -17,6 +22,10 @@ const corsOpts = {
   optionsSuccessStatus: 200,
   allowedHeaders: ['Content-Type', 'Authorization'],
 };
+
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.use(cors(corsOpts));
 app.use(express.json());

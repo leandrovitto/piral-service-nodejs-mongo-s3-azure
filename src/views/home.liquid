@@ -1,9 +1,12 @@
+{% render 'partials/menu.liquid' %}
+
 {% layout "partials/container.liquid" %}
 
 {% block content %}
 
 <div class="pb-8">
     <h1 class="text-lg font-bold text-gray-900">List Pilets</h1>
+    <a class="underline text-tail-500" href="/api/v1/pilet" target="_blank">GET API - /api/v1/pilet</a>
 </div>
 
 <div class="grid grid-cols-3 gap-8">

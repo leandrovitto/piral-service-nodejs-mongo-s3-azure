@@ -1,9 +1,12 @@
 import * as core from 'express-serve-static-core';
-import { API, PILET, ROOT, V1 } from './routes';
-import piletRoutes from './pilets.routes';
-import viewRoutes from './view.routes';
-
 import { Liquid } from 'liquidjs';
+import { ADMIN, API, PILET, ROOT, V1 } from './routes';
+
+import adminRoutes from './admin.routes';
+import homeRoutes from './home.routes';
+import loginRoutes from './login.routes';
+import piletRoutes from './pilets.routes';
+
 const engine = new Liquid();
 
 const routes = (app: core.Express) => {
@@ -13,7 +16,9 @@ const routes = (app: core.Express) => {
   app.set('view engine', 'liquid');
 
   // Routes
-  app.use(ROOT, viewRoutes);
+  app.use(ROOT, loginRoutes);
+  app.use(ROOT, homeRoutes);
+  app.use(ADMIN, adminRoutes);
   app.use(`${API}${V1}${PILET}`, piletRoutes);
 };
 

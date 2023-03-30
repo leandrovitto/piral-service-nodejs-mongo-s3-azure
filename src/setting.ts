@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import * as dotenv from 'dotenv';
-import { logger } from './helpers';
 const ENV = process.env || {};
 
 const PRODUCTION = 'production';
@@ -11,7 +10,7 @@ const LOG_ENABLED = ENV.LOG_ENABLED || true;
 if (process.env.NODE_ENV !== PRODUCTION) dotenv.config();
 //-----NODE ENV-----
 const NODE_ENV = ENV.NODE_ENV || DEVELOPMENT;
-logger(`NODE_ENV:${NODE_ENV}`);
+console.log(`NODE_ENV:${NODE_ENV}`);
 
 const NODE_PORT = ENV.NODE_PORT || 3000;
 //----------------------
@@ -24,6 +23,8 @@ const PILET_VERSION = ENV.PILET_VERSION || 'v3';
 const HOST = ENV.WEBSITE_HOSTNAME || `localhost:${NODE_PORT}`;
 const PROTOCOL = ENV.HTTP_X_FORWARDED_PROTO || 'http';
 const FULL_URL = `${PROTOCOL}://${HOST}`;
+
+const JWT_SECRET_KEY = ENV.JWT_SECRET_KEY || 'ad647bdc23b7437b8fa8f27c3e2d3f7';
 
 const storage = {
   provider: ENV.STORAGE_PROVIDER ? ENV.STORAGE_PROVIDER : 'local', // local | aws | azure
@@ -68,6 +69,7 @@ export {
   HOST,
   PROTOCOL,
   FULL_URL,
+  JWT_SECRET_KEY,
   NODE_ENV,
   NODE_PORT,
   PRODUCTION,

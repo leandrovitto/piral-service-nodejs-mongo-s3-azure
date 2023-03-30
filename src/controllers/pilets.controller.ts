@@ -1,10 +1,9 @@
 /* eslint-disable no-useless-catch */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
-import { Pilet, PiletVersion, PrismaClient } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import * as fs from 'fs';
 import * as path from 'path';
+import { getMessage } from '../helpers';
 import { emptyDirectory, extractTar } from '../helpers/files.helper';
 import { computeIntegrity } from '../helpers/hash.helper';
 import { getContent, getPackageJson } from '../helpers/pilet.helper';
@@ -12,11 +11,7 @@ import { mapperPiletsVersion } from '../mapper/piletVersion.mapper';
 import { storeFile } from '../providers/storage.provider';
 import { PiletService } from '../services/pilet.service';
 import { TGZ_OUTPUT__DIRECTORY, UPLOADS__DIRECTORY } from '../setting';
-import { PackageData } from '../types';
 import { PiletVersionWithPilet } from '../types/model';
-import { getMessage } from '../helpers';
-
-const prisma = new PrismaClient();
 
 const getPiletsController = async (
   req: Request,

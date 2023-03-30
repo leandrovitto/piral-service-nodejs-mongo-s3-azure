@@ -1,9 +1,10 @@
-import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
-import { PiletVersionWithPilet } from '../types/model';
+import { PiletVersion, Prisma } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
+import { PiletVersionWithPilet } from '../types/model';
+import { prismaClient } from './../index';
 
 class PiletVersionRepository {
-  client = new PrismaClient();
+  client = prismaClient;
 
   create = async (
     payload: Omit<PiletVersion, 'id'>,

@@ -2,51 +2,51 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { PiletRepository } from '../repository/pilet.repository';
 import { PiletVersionRepository } from '../repository/piletVersion.repository';
-import { PILETS, ROOT, TRIGGER, VERSIONS } from './routes';
+import { ADMIN, PILETS, ROOT, TRIGGER, VERSIONS } from './routes';
+import { checkToken } from '../middleware/auth.middleware';
+
 const router = express.Router();
 
-router.get(ROOT, (req, res) => {
-  const piletVRepo = new PiletVersionRepository();
-  const pilets = piletVRepo.findManyDistinctPiletsVersion(false);
+router.get(
+  `${PILETS}`,
+  [checkToken()],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const piletVRepo = new PiletVersionRepository();
+    const pilets = await piletVRepo.findManyDistinctPiletsVersion(false);
 
-  res.render('home', {
-    title: 'Homepage',
-    pilets: pilets,
-  });
-});
+    res.render('pilets/pilets', {
+      title: 'Pilets',
+      pilets: pilets,
+    });
+  },
+);
 
-router.get(PILETS, (req, res) => {
-  const piletVRepo = new PiletVersionRepository();
-  const pilets = piletVRepo.findManyDistinctPiletsVersion(false);
+router.get(
+  `${PILETS}/:id${VERSIONS}`,
+  [checkToken()],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const piletId = parseInt(req.params.id);
+    const piletRepo = new PiletRepository();
+    const pilet = await piletRepo.findById(piletId);
 
-  res.render('pilets/pilets', {
-    title: 'Pilets',
-    pilets: pilets,
-  });
-});
+    if (!pilet) {
+      return res.render('error404', { title: 'Not Found' });
+    }
 
-router.get(`${PILETS}/:id${VERSIONS}`, async (req, res) => {
-  const piletId = parseInt(req.params.id);
-  const piletRepo = new PiletRepository();
-  const pilet = await piletRepo.findById(piletId);
+    const piletVRepo = new PiletVersionRepository();
+    const piletVersions = piletVRepo.findManyWithPiletId(piletId);
 
-  if (!pilet) {
-    return res.render('error404', { title: 'Not Found' });
-  }
-
-  const piletVRepo = new PiletVersionRepository();
-  const piletVersions = piletVRepo.findManyWithPiletId(piletId);
-
-  res.render('pilet_versions/pilet_versions', {
-    title: 'Pilet Versions',
-    piletVersions: piletVersions,
-    pilet: pilet,
-  });
-});
+    res.render('pilet_versions/pilet_versions', {
+      title: 'Pilet Versions',
+      piletVersions: piletVersions,
+      pilet: pilet,
+    });
+  },
+);
 
 router.post(
   `${PILETS}/:id${TRIGGER}`,
-  [],
+  [checkToken()],
   async (req: Request, res: Response, next: NextFunction) => {
     const piletId = parseInt(req.params.id);
 
@@ -57,13 +57,13 @@ router.post(
       return res.render('error404', { title: 'Not Found' });
     }
     const stat = await piletRepo.updatePiletEnabled(piletId, !pilet?.enabled);
-    res.redirect(301, `${PILETS}`);
+    res.redirect(301, `${ADMIN}${PILETS}`);
   },
 );
 
 router.post(
   `${PILETS}/:piletId${VERSIONS}/:id${TRIGGER}`,
-  [],
+  [checkToken()],
   async (req: Request, res: Response, next: NextFunction) => {
     const piletId = parseInt(req.params.piletId);
     const id = parseInt(req.params.id);
@@ -80,16 +80,10 @@ router.post(
     await piletVRepo.updatePiletVersionEnabled(id);
     await piletVRepo.disabledOthersPiletVersion(id, piletId);
 
-    res.redirect(301, `${PILETS}/${piletId}${VERSIONS}`);
+    res.redirect(301, `${ADMIN}${PILETS}/${piletId}${VERSIONS}`);
   },
 );
 
-router.get(`/login`, (req, res) => {
-  res.render('login', {
-    title: 'Login',
-  });
-});
-
 ///EXPORT
-const homeRoutes = router;
-export default homeRoutes;
+const adminRoutes = router;
+export default adminRoutes;
