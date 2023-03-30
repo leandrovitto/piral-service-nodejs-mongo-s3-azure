@@ -31,10 +31,6 @@ app.use(
 //Routing
 routes(app);
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 app.listen(port, () => {
   return console.log(`Express is listening at ${FULL_URL}`);
 });

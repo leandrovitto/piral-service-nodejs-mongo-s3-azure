@@ -50,6 +50,15 @@ class PiletVersionRepository {
     return pilet;
   };
 
+  findById = async (id: number): Promise<PiletVersion | null> => {
+    const pilet = await this.client.piletVersion.findFirst({
+      where: {
+        id: id,
+      },
+    });
+    return pilet;
+  };
+
   disabledOthersPiletVersion = async (id: number, piletId: number) => {
     await this.client.piletVersion.updateMany({
       data: {
@@ -83,9 +92,16 @@ class PiletVersionRepository {
     });
   };
 
-  findManyDistinctPiletsVersion = async (): Promise<
-    PiletVersionWithPilet[]
-  > => {
+  findManyDistinctPiletsVersion = async (
+    piletEnabled = true,
+  ): Promise<PiletVersionWithPilet[]> => {
+    const filterPiletEnabled = piletEnabled
+      ? {
+          pilet: {
+            enabled: true,
+          },
+        }
+      : {};
     const pilets = await this.client.piletVersion.findMany({
       distinct: ['piletId'],
       orderBy: {
@@ -93,15 +109,32 @@ class PiletVersionRepository {
       },
       where: {
         enabled: true,
+        ...filterPiletEnabled,
+      },
+      include: {
+        pilet: true,
+      },
+    });
+    return pilets;
+  };
+
+  findManyWithPiletId = async (
+    piletId: number,
+  ): Promise<PiletVersionWithPilet[]> => {
+    const pilets = await this.client.piletVersion.findMany({
+      orderBy: {
+        version: 'desc',
+      },
+      where: {
+        //enabled: true,
         pilet: {
-          enabled: true,
+          id: piletId,
         },
       },
       include: {
         pilet: true,
       },
     });
-
     return pilets;
   };
 }

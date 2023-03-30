@@ -20,11 +20,42 @@ class PiletRepository {
     }
   };
 
+  findById = async (id: number): Promise<Pilet | null> => {
+    const pilet = await this.client.pilet.findFirst({
+      where: { id: id },
+    });
+    return pilet;
+  };
+
   findByName = async (name: string): Promise<Pilet | null> => {
     const pilet = await this.client.pilet.findFirst({
       where: { name: name },
     });
     return pilet;
+  };
+
+  findMany = async (): Promise<Pilet[]> => {
+    const pilets = await this.client.pilet.findMany({
+      orderBy: {
+        id: 'desc',
+      },
+      where: {
+        enabled: true,
+      },
+    });
+
+    return pilets;
+  };
+
+  updatePiletEnabled = async (id: number, enabled = true) => {
+    await this.client.pilet.update({
+      data: {
+        enabled: enabled,
+      },
+      where: {
+        id: id,
+      },
+    });
   };
 }
 
