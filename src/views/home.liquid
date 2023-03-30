@@ -1,0 +1,24 @@
+{% layout "partials/container.liquid" %}
+
+{% block content %}
+
+<div class="pb-8">
+    <h1 class="text-lg font-bold text-gray-900">List Pilets</h1>
+</div>
+
+<div class="grid grid-cols-3 gap-8">
+{% for pil in pilets %}
+    <div class="shadow-md rounded-md p-8 bg-teal-100 hover:bg-teal-300">
+        <div class="text-base font-thin">Version id: {{ pil.id}} | Id:{{pil.piletId}}</div>
+        <div class="text-2xl font-bold">{{ pil.pilet.name}}</div>
+        <div class="text-xl font-normal">{{ pil.version}}</div>
+        <div class="text-xs text-gray-500">{{ pil.integrity}}</div>
+        <div class="text-xs text-gray-500">{{ pil.date}}</div>
+    </div>
+{% endfor %}
+</div>
+
+{% endblock %}
+
+
+

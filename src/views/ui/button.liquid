@@ -1,0 +1,21 @@
+{% assign default_colour = "bg-indigo-600 hover:bg-indigo-500 " %}
+{% assign success_colur = "bg-green-600 hover:bg-green-500 " %}
+{% assign danger_colur = "bg-red-600 hover:bg-red-500 " %}
+
+{% capture btn_classes %}
+    block rounded-md px-3 py-2 text-center text-sm font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2
+{% endcapture %}
+
+{% capture btn_colour %}
+    {% if type == 'success' %}
+        {{success_colur}}
+    {% elsif type == 'danger' %}
+        {{danger_colur}}
+    {% else %}
+        {{default_colour}}
+    {% endif %}
+{% endcapture %}
+
+<button type="submit" class='{{ btn_classes }} {{ btn_colour }}'>
+    {{ title }}
+</button>

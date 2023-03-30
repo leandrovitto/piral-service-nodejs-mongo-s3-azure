@@ -7,16 +7,17 @@ import {
 import multer from 'multer';
 import { UPLOADS__DIRECTORY } from '../setting';
 import { checkAuth } from '../middleware/auth.middleware';
+import { ROOT } from './routes';
 
 const router = express.Router();
 
 // GET PILETS
-router.get(`/`, getPiletsController);
+router.get(ROOT, getPiletsController);
 
 // POST PILET
 const upload = multer({ dest: UPLOADS__DIRECTORY + '/' });
 const cpUpload = upload.single('file');
-router.post(`/`, [checkAuth(), cpUpload], publishPiletController);
+router.post(ROOT, [checkAuth(), cpUpload], publishPiletController);
 
 ///EXPORT
 const piletRoutes = router;
