@@ -10,6 +10,7 @@ import {
   storage,
 } from '../setting';
 import { BlobServiceClient, PublicAccessType } from '@azure/storage-blob';
+import { logger } from '../helpers';
 
 const azureSettings = storage.azureSettings;
 
@@ -42,7 +43,7 @@ const azureStorageProvider = async (pilet: PiletVersionWithPilet) => {
       access: azureSettings.acl as PublicAccessType,
     });
 
-    console.log(
+    logger(
       `Container was created successfully.\n\trequestId:${createContainerResponse.requestId}\n\tURL: ${containerClient.url}`,
     );
 
@@ -77,11 +78,11 @@ const azureStorageProvider = async (pilet: PiletVersionWithPilet) => {
             file.Body.length,
           );
 
-          console.log(
+          logger(
             `Blob was uploaded successfully. requestId: ${uploadBlobResponse.requestId}`,
           );
         } catch (error) {
-          console.log(`${file.Key} uploaded error.`);
+          logger(`${file.Key} uploaded error.`);
           errorTrack = error;
         }
       }

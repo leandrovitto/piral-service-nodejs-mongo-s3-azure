@@ -15,6 +15,7 @@ import {
 } from '../setting';
 import { PiletVersionWithPilet } from '../types/model';
 import * as mimeTypes from 'mime-types';
+import { logger } from '../helpers';
 
 const awsSettings = storage.awsSettings;
 
@@ -39,7 +40,7 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
 
     const s3Client = new S3Client({ region: awsSettings.region });
 
-    console.log(`Uploading files from ${destinationPath} to AWS S3\n`);
+    logger(`Uploading files from ${destinationPath} to AWS S3\n`);
     const keys = fs.readdirSync(destinationPath);
 
     const files = keys.map((key) => {
@@ -72,9 +73,9 @@ const awsStorageProvider = async (pilet: PiletVersionWithPilet) => {
               ACL: awsSettings.acl,
             }),
           );
-          console.log(`${file.Key} uploaded successfully.`);
+          logger(`${file.Key} uploaded successfully.`);
         } catch (error) {
-          console.log(`${file.Key} uploaded error.`);
+          logger(`${file.Key} uploaded error.`);
           errorTrack = error;
         }
       }

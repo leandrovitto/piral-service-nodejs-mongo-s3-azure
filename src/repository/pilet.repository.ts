@@ -1,8 +1,8 @@
 /* eslint-disable no-useless-catch */
 import { Pilet, PrismaClient } from '@prisma/client';
+import { getMessage, logger } from '../helpers';
 
 class PiletRepository {
-  //constructor(parameters) {}
   client = new PrismaClient();
 
   create = async (payload: Omit<Pilet, 'id' | 'enabled'>): Promise<Pilet> => {
@@ -13,8 +13,7 @@ class PiletRepository {
           meta: payload.meta || {},
         },
       });
-      // eslint-disable-next-line no-console
-      console.log('------> Record write in DB');
+      logger(getMessage('labels.pilet.saved') as string);
       return p;
     } catch (e) {
       throw e;

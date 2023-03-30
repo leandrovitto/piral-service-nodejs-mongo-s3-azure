@@ -1,14 +1,17 @@
 /* eslint-disable no-console */
 import * as dotenv from 'dotenv';
+import { logger } from './helpers';
 const ENV = process.env || {};
 
 const PRODUCTION = 'production';
 const DEVELOPMENT = 'development';
 
+const LOG_ENABLED = ENV.LOG_ENABLED || true;
+
 if (process.env.NODE_ENV !== PRODUCTION) dotenv.config();
 //-----NODE ENV-----
 const NODE_ENV = ENV.NODE_ENV || DEVELOPMENT;
-console.log('NODE_ENV:', NODE_ENV);
+logger(`NODE_ENV:${NODE_ENV}`);
 
 const NODE_PORT = ENV.NODE_PORT || 3000;
 //----------------------
@@ -73,4 +76,5 @@ export {
   BUILD_OUTPUT__DIRECTORY,
   PACKAGE_JSON__FILE,
   PILET_VERSION,
+  LOG_ENABLED,
 };

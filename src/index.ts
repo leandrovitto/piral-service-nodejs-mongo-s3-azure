@@ -4,8 +4,9 @@ import express from 'express';
 import * as core from 'express-serve-static-core';
 import responseTime from 'response-time';
 import routes from './endpoints';
-import { FULL_URL, NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
 import { KeyService } from './services/keys.service';
+import { FULL_URL, NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
+import { logger } from './helpers';
 
 const app: core.Express = express();
 const port = NODE_PORT || 3000;
@@ -41,9 +42,9 @@ app.listen(port, () => {
 const showKeys = async () => {
   const keyService = new KeyService();
   const keys = await keyService.getKeys();
-  console.log('\nAuth Keys:');
-  keys.map((k) => console.log(k));
-  console.log('\n');
+  logger('\nAuth Keys:', '');
+  keys.map((k) => logger(k, ''));
+  logger('\n', '');
 };
 
 showKeys();

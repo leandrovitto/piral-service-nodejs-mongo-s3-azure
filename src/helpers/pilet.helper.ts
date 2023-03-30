@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { PackageData } from '../types';
 import { PACKAGE_JSON__FILE } from '../setting';
+import { getMessage } from './messages/message.helper';
 
 const getPackageJson = (path: string): PackageData => {
   try {
@@ -11,7 +12,7 @@ const getPackageJson = (path: string): PackageData => {
     });
     return JSON.parse(data);
   } catch (e) {
-    throw 'LOG::packages.json miss!';
+    throw getMessage('errors.pilet.package_json');
   }
 };
 

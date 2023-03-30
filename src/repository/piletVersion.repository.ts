@@ -1,8 +1,8 @@
 import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
 import { PiletVersionWithPilet } from '../types/model';
+import { getMessage, logger } from '../helpers';
 
 class PiletVersionRepository {
-  //constructor(parameters) {}
   client = new PrismaClient();
 
   create = async (
@@ -24,17 +24,13 @@ class PiletVersionRepository {
           pilet: true,
         },
       });
-      // eslint-disable-next-line no-console
-      console.log('------> Record write in DB');
+      logger(getMessage('labels.piletVersion.saved') as string);
       return p;
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         // The .code property can be accessed in a type-safe manner
         if (e.code === 'P2002') {
-          // eslint-disable-next-line no-console
-          console.log(
-            'There is a unique constraint violation, a new user cannot be created with this name',
-          );
+          logger(getMessage('labels.piletVersion.unique') as string);
         }
       }
       throw e;

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, RequestHandler, Request, Response } from 'express';
 import { KeyService } from '../services/keys.service';
+import { getMessage } from '../helpers';
 const authHeaderExtract = /^basic\s+([a-fA-F0-9]+)$/i;
 
 async function checkKey(authHeader: string | undefined, scopes: Array<string>) {
@@ -19,7 +20,7 @@ export const checkAuth =
     if (!authorized) {
       res.status(401).json({
         success: false,
-        message: 'Invalid API key supplied.',
+        message: getMessage('errors.auth.unauthorized'),
       });
     } else {
       next();

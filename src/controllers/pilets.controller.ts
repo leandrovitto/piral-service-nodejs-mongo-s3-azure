@@ -6,7 +6,7 @@ import { NextFunction, Request, Response } from 'express';
 import * as fs from 'fs';
 import * as path from 'path';
 import { emptyDirectory, extractTar } from '../helpers/files.helper';
-import { computeIntegrity } from '../helpers/hash';
+import { computeIntegrity } from '../helpers/hash.helper';
 import { getContent, getPackageJson } from '../helpers/pilet.helper';
 import { mapperPiletsVersion } from '../mapper/piletVersion.mapper';
 import { storeFile } from '../providers/storage.provider';
@@ -14,6 +14,7 @@ import { PiletService } from '../services/pilet.service';
 import { TGZ_OUTPUT__DIRECTORY, UPLOADS__DIRECTORY } from '../setting';
 import { PackageData } from '../types';
 import { PiletVersionWithPilet } from '../types/model';
+import { getMessage } from '../helpers';
 
 const prisma = new PrismaClient();
 
@@ -79,7 +80,7 @@ const publishPiletController = async (
               success: true,
             });
           } else {
-            throw `Error pilet saving!`;
+            throw getMessage('errors.pilet.saving');
           }
         } catch (err) {
           emptyDirectory(UPLOADS__DIRECTORY);
