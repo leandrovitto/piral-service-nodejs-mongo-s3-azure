@@ -20,6 +20,8 @@ model Pilet {
   meta  Json?
   enabled Boolean @default(true)
   piletVersion PiletVersion[]
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
 }
 
 model PiletVersion {
@@ -33,9 +35,13 @@ model PiletVersion {
   link  String?
   spec  String? @default("v2")
   enabled Boolean @default(false)
+  createdAt DateTime?  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime?  @updatedAt @db.Timestamptz(3)
 }
 
 model Keys {
   id    Int     @id @default(autoincrement())
   key String  @unique
+  createdAt DateTime?  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime?  @updatedAt @db.Timestamptz(3)
 }

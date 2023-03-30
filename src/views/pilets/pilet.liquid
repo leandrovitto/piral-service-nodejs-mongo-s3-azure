@@ -23,15 +23,20 @@
   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-900 font-bold">{{ piletV.pilet.name }}</td>
   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ piletV.version }}</td>
   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-  <div class="flex items-center text-center mx-auto justify-center">
-    {% if piletV.pilet.enabled %}
-      <span class="rounded-full bg-green-600 w-6 h-6"></span>
-    {% endif %}
-  </div>
+    <div class="flex items-center text-center mx-auto justify-center">
+      {% if piletV.pilet.enabled %}
+        <span class="rounded-full bg-green-600 w-6 h-6"></span>
+      {% endif %}
+    </div>
   </td>
-  <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-  <div class="inline-flex gap-4">
-      <form method="post" action="/admin/pilets/{{ piletV.piletId }}/trigger">
+  <td class="text-center px-3 py-4 text-sm text-gray-500">
+    <div class="text-xs">
+      {{ piletV.createdAt | date: "%Y-%m-%d %H:%M" }}
+    </div>
+  </td>
+  <td class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
+  <div class="inline-flex gap-x-4">
+      <form class="my-1" method="post" action="/admin/pilets/{{ piletV.piletId }}/trigger">
         {% if piletV.pilet.enabled %}
             {% render 'ui/button.liquid', type: 'danger', title : 'Disabled' %}
         {% else %}
@@ -39,7 +44,7 @@
         {% endif %}
       </form>
 
-      <a href="/admin/pilets/{{ piletV.piletId }}/versions">
+      <a class="my-1" href="/admin/pilets/{{ piletV.piletId }}/versions">
           {% render 'ui/button.liquid',title : 'View Versions' %}
       </a>
 

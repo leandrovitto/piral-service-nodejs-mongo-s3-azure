@@ -7,7 +7,7 @@ class PiletVersionRepository {
   client = prismaClient;
 
   create = async (
-    payload: Omit<PiletVersion, 'id'>,
+    payload: Omit<PiletVersion, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<PiletVersionWithPilet> => {
     try {
       const p = await this.client.piletVersion.create({

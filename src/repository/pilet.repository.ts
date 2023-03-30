@@ -6,7 +6,9 @@ import { getMessage, logger } from '../helpers';
 class PiletRepository {
   client = prismaClient;
 
-  create = async (payload: Omit<Pilet, 'id' | 'enabled'>): Promise<Pilet> => {
+  create = async (
+    payload: Omit<Pilet, 'id' | 'enabled' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Pilet> => {
     try {
       const p = await this.client.pilet.create({
         data: {
