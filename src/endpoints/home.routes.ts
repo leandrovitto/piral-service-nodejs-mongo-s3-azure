@@ -1,20 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import express, { NextFunction, Request, Response } from 'express';
-import { PiletRepository } from '../repository/pilet.repository';
-import { PiletVersionRepository } from '../repository/piletVersion.repository';
-import { PILETS, ROOT, TRIGGER, VERSIONS } from './routes';
+import express from 'express';
+import { getHomeController } from '../controllers/home.controller';
+import { ROOT } from './routes';
 
 const router = express.Router();
 
-router.get(ROOT, async (req: Request, res: Response, next: NextFunction) => {
-  const piletVRepo = new PiletVersionRepository();
-  const pilets = await piletVRepo.findManyDistinctPiletsVersion();
-
-  res.render('home', {
-    title: 'Homepage',
-    pilets: pilets,
-  });
-});
+router.get(ROOT, getHomeController);
 
 ///EXPORT
 const homeRoutes = router;

@@ -25,6 +25,7 @@ const PROTOCOL = ENV.HTTP_X_FORWARDED_PROTO || 'http';
 const FULL_URL = `${PROTOCOL}://${HOST}`;
 
 const JWT_SECRET_KEY = ENV.JWT_SECRET_KEY || 'ad647bdc23b7437b8fa8f27c3e2d3f7';
+const JWT_COOKIE = 'token';
 
 const storage = {
   provider: ENV.STORAGE_PROVIDER ? ENV.STORAGE_PROVIDER : 'local', // local | aws | azure
@@ -70,6 +71,7 @@ export {
   PROTOCOL,
   FULL_URL,
   JWT_SECRET_KEY,
+  JWT_COOKIE,
   NODE_ENV,
   NODE_PORT,
   PRODUCTION,
