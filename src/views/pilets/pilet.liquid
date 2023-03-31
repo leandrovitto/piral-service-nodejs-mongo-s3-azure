@@ -35,19 +35,17 @@
     </div>
   </td>
   <td class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
-  <div class="inline-flex gap-x-4">
-      <form class="my-1" method="post" action="/admin/pilets/{{ piletV.piletId }}/trigger">
-        {% if piletV.pilet.enabled %}
-            {% render 'ui/button.liquid', type: 'danger', title : 'Disabled' %}
-        {% else %}
-            {% render 'ui/button.liquid',type: 'success', title : 'Enabled' %}
-        {% endif %}
-      </form>
+    <div class="inline-flex gap-x-4">
+        <form class="my-1" method="post" action="/admin/pilets/{{ piletV.piletId }}/trigger">
+          {% if piletV.pilet.enabled %}
+              {% render 'ui/button.liquid', type: 'danger', title : 'Disable' %}
+          {% else %}
+              {% render 'ui/button.liquid',type: 'success', title : 'Enable' %}
+          {% endif %}
+        </form>
 
-      <a class="my-1" href="/admin/pilets/{{ piletV.piletId }}/versions">
-          {% render 'ui/button.liquid',title : 'View Versions' %}
-      </a>
-
-  </div>
+        {% capture link %}/admin/pilets/{{ piletV.piletId }}/versions{% endcapture %}
+        {% render 'ui/button_link.liquid', title : 'View Versions', link : link %}
+    </div>
   </td>
 </tr>
