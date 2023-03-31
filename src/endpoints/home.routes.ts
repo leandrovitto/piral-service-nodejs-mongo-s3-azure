@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get(ROOT, async (req: Request, res: Response, next: NextFunction) => {
   const piletVRepo = new PiletVersionRepository();
-  const pilets = await piletVRepo.findManyDistinctPiletsVersion(false);
+  const pilets = await piletVRepo.findManyDistinctPiletsVersion();
 
   res.render('home', {
     title: 'Homepage',

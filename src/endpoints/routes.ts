@@ -5,11 +5,12 @@ const V1 = '/v1';
 //PILET
 const PILET = '/pilet';
 
+const ADMIN = '/admin';
 const PILETS = '/pilets';
 const VERSIONS = '/versions';
 const TRIGGER = '/trigger';
 
-const ADMIN = '/admin';
+const AUTH = '/auth';
 const LOGIN = '/login';
 const LOGOUT = '/logout';
 
@@ -24,4 +25,5 @@ export {
   TRIGGER,
   LOGIN,
   LOGOUT,
+  AUTH,
 };

@@ -16,6 +16,11 @@ const port = NODE_PORT || 3000;
 
 export const prismaClient = new PrismaClient();
 
+prismaClient
+  .$connect()
+  .then(() => logger('DB Connect!'))
+  .catch(() => logger('DB Error connection!'));
+
 const corsOpts = {
   origin: '*',
   credentials: true,

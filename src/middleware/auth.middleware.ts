@@ -2,7 +2,7 @@
 import { NextFunction, RequestHandler, Request, Response } from 'express';
 import { KeyService } from '../services/keys.service';
 import { getMessage, logger } from '../helpers';
-import { LOGIN } from '../endpoints/routes';
+import { AUTH, LOGIN } from '../endpoints/routes';
 import { JWT_SECRET_KEY } from '../setting';
 import jwt from 'jsonwebtoken';
 const authHeaderExtract = /^basic\s+([a-fA-F0-9]+)$/i;
@@ -39,14 +39,10 @@ export const checkAuth =
 export const checkToken =
   (...scopes: Array<string>): RequestHandler =>
   (req: Request, res: Response, next: NextFunction) => {
-    if (!req.cookies.token) {
-      return res.redirect(301, `${LOGIN}`);
-    }
-
     const verified = verifyToken(req);
 
     if (!verified) {
-      return res.redirect(301, `${LOGIN}?error=Key not valid!`);
+      return res.redirect(`${AUTH}${LOGIN}?error=Key not valid!`);
     }
     // logger(JSON.stringify(verified));
     next();

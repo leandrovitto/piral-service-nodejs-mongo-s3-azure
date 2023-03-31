@@ -1,6 +1,6 @@
 import * as core from 'express-serve-static-core';
 import { Liquid } from 'liquidjs';
-import { ADMIN, API, PILET, ROOT, V1 } from './routes';
+import { ADMIN, API, AUTH, PILET, ROOT, V1 } from './routes';
 
 import adminRoutes from './admin.routes';
 import homeRoutes from './home.routes';
@@ -16,7 +16,7 @@ const routes = (app: core.Express) => {
   app.set('view engine', 'liquid');
 
   // Routes
-  app.use(ROOT, loginRoutes);
+  app.use(AUTH, loginRoutes);
   app.use(ROOT, homeRoutes);
   app.use(ADMIN, adminRoutes);
   app.use(`${API}${V1}${PILET}`, piletRoutes);

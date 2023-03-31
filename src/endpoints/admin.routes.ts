@@ -34,7 +34,7 @@ router.get(
     }
 
     const piletVRepo = new PiletVersionRepository();
-    const piletVersions = piletVRepo.findManyWithPiletId(piletId);
+    const piletVersions = await piletVRepo.findManyWithPiletId(piletId);
 
     res.render('pilet_versions/pilet_versions', {
       title: 'Pilet Versions',
@@ -57,7 +57,7 @@ router.post(
       return res.render('error404', { title: 'Not Found' });
     }
     const stat = await piletRepo.updatePiletEnabled(piletId, !pilet?.enabled);
-    res.redirect(301, `${ADMIN}${PILETS}`);
+    res.redirect(`${ADMIN}${PILETS}`);
   },
 );
 
@@ -80,7 +80,7 @@ router.post(
     await piletVRepo.updatePiletVersionEnabled(id);
     await piletVRepo.disabledOthersPiletVersion(id, piletId);
 
-    res.redirect(301, `${ADMIN}${PILETS}/${piletId}${VERSIONS}`);
+    res.redirect(`${ADMIN}${PILETS}/${piletId}${VERSIONS}`);
   },
 );
 
