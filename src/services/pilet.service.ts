@@ -1,15 +1,15 @@
 /* eslint-disable no-console */
 import { getMessage, logger } from '../helpers';
-import { PiletRepository } from '../repository/pilet.repository';
-import { PiletVersionRepository } from '../repository/piletVersion.repository';
+import piletRepository from '../repository/pilet.repository';
+import piletVersionRepository from '../repository/piletVersion.repository';
 import { PILET_VERSION } from '../setting';
 import { PiletVersionWithPilet } from '../types/model';
 
 class PiletService {
   getPiletsVersion = async (): Promise<PiletVersionWithPilet[]> => {
     try {
-      const piletVRepo = new PiletVersionRepository();
-      const pilets = await piletVRepo.findManyDistinctPiletsVersion();
+      const pilets =
+        await piletVersionRepository.findManyDistinctPiletsVersion();
       return pilets;
     } catch (error) {
       throw getMessage('errors.piletVersion.get');
@@ -18,8 +18,7 @@ class PiletService {
 
   updatePiletVersionEnabled = async (id: number, enabled = true) => {
     try {
-      const piletVRepo = new PiletVersionRepository();
-      await piletVRepo.updatePiletVersionEnabled(id, enabled);
+      await piletVersionRepository.updatePiletVersionEnabled(id, enabled);
     } catch (error) {
       throw getMessage('errors.piletVersion.update');
     }
@@ -27,8 +26,7 @@ class PiletService {
 
   deletePiletVersion = async (id: number) => {
     try {
-      const piletVRepo = new PiletVersionRepository();
-      await piletVRepo.deletePiletVersion(id);
+      await piletVersionRepository.deletePiletVersion(id);
     } catch (error) {
       throw getMessage('errors.piletVersion.delete');
     }
@@ -41,28 +39,28 @@ class PiletService {
     integrity: string,
     link: string,
   ): Promise<PiletVersionWithPilet | null> => {
-    const piletRepo = new PiletRepository();
-    const piletVRepo = new PiletVersionRepository();
-
     // Find pilet by name
-    let pilet = await piletRepo.findByName(piletName);
+    let pilet = await piletRepository.findByName(piletName);
 
     if (!pilet) {
       getMessage('errors.pilet.not_found');
       //if not found pilet create new record
-      pilet = await piletRepo.create({
+      pilet = await piletRepository.create({
         name: piletName,
         meta: {},
       });
     }
 
     // find piletVersion with piletId and pilet Version
-    let pV = await piletVRepo.findByPiletIdAndVersion(pilet.id, version);
+    let pV = await piletVersionRepository.findByPiletIdAndVersion(
+      pilet.id,
+      version,
+    );
 
     if (!pV) {
       logger(`Pack with name:${piletName}, version ${version} not found`);
 
-      pV = await piletVRepo.create({
+      pV = await piletVersionRepository.create({
         piletId: pilet.id,
         meta: {},
         version: version,
@@ -73,7 +71,7 @@ class PiletService {
         enabled: true,
       });
 
-      await piletVRepo.disabledOthersPiletVersion(pV.id, pilet.id);
+      await piletVersionRepository.disabledOthersPiletVersion(pV.id, pilet.id);
 
       return pV as PiletVersionWithPilet;
     } else {

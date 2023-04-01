@@ -1,44 +1,41 @@
-import { prismaClient } from './../index';
-/* eslint-disable no-useless-catch */
-import { Pilet } from '@prisma/client';
+import { Pilet, PrismaClient } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
+import prismaSingleton from '../helpers/db.helper';
 
 class PiletRepository {
-  client = prismaClient;
+  private _client;
+
+  constructor(prisma_client: PrismaClient) {
+    this._client = prisma_client;
+  }
 
   create = async (
     payload: Omit<Pilet, 'id' | 'enabled' | 'createdAt' | 'updatedAt'>,
   ): Promise<Pilet> => {
-    try {
-      const p = await this.client.pilet.create({
-        data: {
-          name: payload.name,
-          meta: payload.meta || {},
-        },
-      });
-      logger(getMessage('labels.pilet.saved') as string);
-      return p;
-    } catch (e) {
-      throw e;
-    }
+    const p = await this._client.pilet.create({
+      data: {
+        name: payload.name,
+        meta: payload.meta || {},
+      },
+    });
+    logger(getMessage('labels.pilet.saved') as string);
+    return p;
   };
 
   findById = async (id: number): Promise<Pilet | null> => {
-    const pilet = await this.client.pilet.findFirst({
+    return await this._client.pilet.findFirst({
       where: { id: id },
     });
-    return pilet;
   };
 
   findByName = async (name: string): Promise<Pilet | null> => {
-    const pilet = await this.client.pilet.findFirst({
+    return await this._client.pilet.findFirst({
       where: { name: name },
     });
-    return pilet;
   };
 
-  findMany = async (): Promise<Pilet[]> => {
-    const pilets = await this.client.pilet.findMany({
+  findAll = async (): Promise<Pilet[]> => {
+    return await this._client.pilet.findMany({
       orderBy: {
         id: 'desc',
       },
@@ -46,12 +43,10 @@ class PiletRepository {
         enabled: true,
       },
     });
-
-    return pilets;
   };
 
-  updatePiletEnabled = async (id: number, enabled = true) => {
-    await this.client.pilet.update({
+  updatePiletEnabled = async (id: number, enabled = true): Promise<Pilet> => {
+    return await this._client.pilet.update({
       data: {
         enabled: enabled,
       },
@@ -62,4 +57,5 @@ class PiletRepository {
   };
 }
 
-export { PiletRepository };
+const piletRepository = new PiletRepository(prismaSingleton.getClient());
+export default piletRepository;

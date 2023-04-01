@@ -1,25 +1,17 @@
 /* eslint-disable no-console */
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import * as core from 'express-serve-static-core';
 import responseTime from 'response-time';
 import routes from './endpoints';
+import { logger } from './helpers';
 import { KeyService } from './services/keys.service';
 import { FULL_URL, NODE_PORT, UPLOADS__DIRECTORY, storage } from './setting';
-import { logger } from './helpers';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import { PrismaClient } from '@prisma/client';
 
 const app: core.Express = express();
 const port = NODE_PORT || 3000;
-
-export const prismaClient = new PrismaClient();
-
-prismaClient
-  .$connect()
-  .then(() => logger('DB Connect!'))
-  .catch(() => logger('DB Error connection!'));
 
 const corsOpts = {
   origin: '*',

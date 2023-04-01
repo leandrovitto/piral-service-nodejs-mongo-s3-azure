@@ -1,16 +1,20 @@
-import { PiletVersion, Prisma } from '@prisma/client';
+import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
 import { PiletVersionWithPilet } from '../types/model';
-import { prismaClient } from './../index';
+import prismaSingleton from '../helpers/db.helper';
 
 class PiletVersionRepository {
-  client = prismaClient;
+  private _client;
+
+  constructor(prisma_client: PrismaClient) {
+    this._client = prisma_client;
+  }
 
   create = async (
     payload: Omit<PiletVersion, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<PiletVersionWithPilet> => {
     try {
-      const p = await this.client.piletVersion.create({
+      const p = await this._client.piletVersion.create({
         data: {
           piletId: payload.piletId,
           meta: payload.meta || {},
@@ -42,7 +46,7 @@ class PiletVersionRepository {
     piletId: number,
     version: string,
   ): Promise<PiletVersion | null> => {
-    const pilet = await this.client.piletVersion.findFirst({
+    const pilet = await this._client.piletVersion.findFirst({
       where: {
         version: version,
         piletId: piletId,
@@ -52,7 +56,7 @@ class PiletVersionRepository {
   };
 
   findById = async (id: number): Promise<PiletVersion | null> => {
-    const pilet = await this.client.piletVersion.findFirst({
+    const pilet = await this._client.piletVersion.findFirst({
       where: {
         id: id,
       },
@@ -61,7 +65,7 @@ class PiletVersionRepository {
   };
 
   disabledOthersPiletVersion = async (id: number, piletId: number) => {
-    await this.client.piletVersion.updateMany({
+    await this._client.piletVersion.updateMany({
       data: {
         enabled: false,
       },
@@ -75,7 +79,7 @@ class PiletVersionRepository {
   };
 
   updatePiletVersionEnabled = async (id: number, enabled = true) => {
-    await this.client.piletVersion.update({
+    await this._client.piletVersion.update({
       data: {
         enabled: enabled,
       },
@@ -86,7 +90,7 @@ class PiletVersionRepository {
   };
 
   deletePiletVersion = async (id: number) => {
-    await this.client.piletVersion.delete({
+    await this._client.piletVersion.delete({
       where: {
         id: id,
       },
@@ -103,7 +107,7 @@ class PiletVersionRepository {
           },
         }
       : {};
-    const pilets = await this.client.piletVersion.findMany({
+    const pilets = await this._client.piletVersion.findMany({
       distinct: ['piletId'],
       orderBy: {
         version: 'desc',
@@ -122,7 +126,7 @@ class PiletVersionRepository {
   findManyWithPiletId = async (
     piletId: number,
   ): Promise<PiletVersionWithPilet[]> => {
-    const pilets = await this.client.piletVersion.findMany({
+    const pilets = await this._client.piletVersion.findMany({
       orderBy: {
         version: 'desc',
       },
@@ -140,4 +144,7 @@ class PiletVersionRepository {
   };
 }
 
-export { PiletVersionRepository };
+const piletVersionRepository = new PiletVersionRepository(
+  prismaSingleton.getClient(),
+);
+export default piletVersionRepository;

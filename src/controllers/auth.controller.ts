@@ -2,9 +2,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { ADMIN, AUTH, LOGIN, PILETS, ROOT } from '../endpoints/routes';
 import { verifyToken } from '../middleware/auth.middleware';
-import { KeyRepository } from '../repository/key.repository';
 import { JWT_COOKIE, JWT_SECRET_KEY } from '../setting';
 import jwt from 'jsonwebtoken';
+import keyRepository from '../repository/key.repository';
 
 const loginGetController = async (
   req: Request,
@@ -31,8 +31,7 @@ const loginCreateController = async (
     res.redirect(`${AUTH}${LOGIN}?error=Key not valid!`);
   }
 
-  const kRepo = new KeyRepository();
-  const result = await kRepo.findKeyByKey(loginKey);
+  const result = await keyRepository.findKeyByKey(loginKey);
 
   if (!loginKey || !result) {
     return res.redirect(`${AUTH}${LOGIN}?error=Key not valid!`);
