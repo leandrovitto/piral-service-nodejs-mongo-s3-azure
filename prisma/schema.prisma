@@ -1,0 +1,47 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["clientExtensions"]
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+}
+
+model Pilet {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique
+  meta  Json?
+  enabled Boolean @default(true)
+  piletVersion PiletVersion[]
+  createdAt DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime  @updatedAt @db.Timestamptz(3)
+}
+
+model PiletVersion {
+  id    Int     @id @default(autoincrement())
+  pilet Pilet   @relation(fields: [piletId], references: [id])
+  piletId  Int
+  meta  Json?
+  version String?
+  root  String?
+  integrity  String?
+  link  String?
+  spec  String? @default("v2")
+  enabled Boolean @default(false)
+  createdAt DateTime?  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime?  @updatedAt @db.Timestamptz(3)
+}
+
+model Keys {
+  id    Int     @id @default(autoincrement())
+  key String  @unique
+  createdAt DateTime?  @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime?  @updatedAt @db.Timestamptz(3)
+}

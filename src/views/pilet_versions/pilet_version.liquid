@@ -1,0 +1,58 @@
+{% comment %} 
+{
+  "id": 52,
+  "piletId": 1,
+  "meta": {},
+  "version": "1.91.18",
+  "root": "dist/index.js",
+  "integrity": "sha256-rOFsh0u2tA7u3H+Pe+NRl6wvQH37papT8T2k3CSMOVY=",
+  "link": "/b3000-fe-engine/1.91.18/index.js",
+  "spec": "v2",
+  "enabled": true,
+  "pilet": {
+    "id": 1,
+    "name": "b3000-fe-engine",
+    "meta": {},
+    "enabled": true
+  }
+} 
+{% endcomment %}
+
+<tr>
+  <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+  {{ piletV.id }}
+    <div class="text-xs text-gray-400">{{ piletV.piletId }} | {{ piletV.pilet.name }}</div>
+  </td>
+  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-800 text-base font-bold ">
+    {% if piletV.enabled %}
+      <span class="inline-flex items-center rounded-full border border-green-600 px-2 py-0.5 text-sm font-bold">
+        {{ piletV.version }}
+      </span>
+    {% else %}
+      <span class="inline-flex items-center rounded-full border border-white px-2 py-0.5 text-sm font-bold">
+        {{ piletV.version }}
+      </span>
+    {% endif %}
+  </td>
+  <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+  <div class="flex items-center text-center mx-auto justify-center">
+    {% if piletV.enabled %}
+      <span class="inline-flex items-center rounded-full bg-green-600 px-2 py-0.5 text-sm font-medium text-white">current</span>
+    {% endif %}
+  </div>
+  </td>
+    <td class="text-center px-3 py-4 text-sm text-gray-500">
+    <div class="text-xs">
+      {{ piletV.createdAt | date: "%Y-%m-%d %H:%M" }}
+    </div>
+  </td>
+  <td class="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium ">
+  <div class="inline-flex gap-4">
+      <form class="my-1" method="post" action="/admin/pilets/{{ piletV.piletId }}/versions/{{ piletV.id}}/trigger">
+        {% if not piletV.enabled %}
+            {% render 'ui/button.liquid', title : 'Set Current' %}
+        {% endif %}
+      </form>
+  </div>
+  </td>
+</tr>
