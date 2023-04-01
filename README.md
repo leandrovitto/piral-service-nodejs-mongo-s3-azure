@@ -44,3 +44,21 @@ npm run start
 npm run start:dev (with live reload)
 ```
 
+# Storage File Pilet
+
+Choose configuration:
+
+- Aws
+- Azure
+- Local
+
+# Key Storage
+
+Choose configuration KEYS_PROVIDER (default Local, not secure beacause the key are pre-generated)
+
+- Local
+- Env
+- Database
+
+
+Follow the configuration in ```.env.backup``` file for configuration. For more information read the file ```src/setting.ts```.
