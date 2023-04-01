@@ -1,14 +1,8 @@
-import { Pilet, PrismaClient } from '@prisma/client';
+import { Pilet } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
-import prismaSingleton from '../helpers/db.helper';
+import { BaseRepository } from './base.repository';
 
-class PiletRepository {
-  private _client;
-
-  constructor(prisma_client: PrismaClient) {
-    this._client = prisma_client;
-  }
-
+export class PiletRepository extends BaseRepository<Pilet> {
   create = async (
     payload: Omit<Pilet, 'id' | 'enabled' | 'createdAt' | 'updatedAt'>,
   ): Promise<Pilet> => {
@@ -56,6 +50,3 @@ class PiletRepository {
     });
   };
 }
-
-const piletRepository = new PiletRepository(prismaSingleton.getClient());
-export default piletRepository;

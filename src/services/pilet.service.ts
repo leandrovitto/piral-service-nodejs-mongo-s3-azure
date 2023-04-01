@@ -1,13 +1,14 @@
 /* eslint-disable no-console */
 import { getMessage, logger } from '../helpers';
-import piletRepository from '../repository/pilet.repository';
-import piletVersionRepository from '../repository/piletVersion.repository';
+import { PiletRepository } from '../repository/pilet.repository';
+import { PiletVersionRepository } from '../repository/piletVersion.repository';
 import { PILET_VERSION } from '../setting';
 import { PiletVersionWithPilet } from '../types/model';
 
 class PiletService {
   getPiletsVersion = async (): Promise<PiletVersionWithPilet[]> => {
     try {
+      const piletVersionRepository = new PiletVersionRepository();
       const pilets =
         await piletVersionRepository.findManyDistinctPiletsVersion();
       return pilets;
@@ -18,6 +19,7 @@ class PiletService {
 
   updatePiletVersionEnabled = async (id: number, enabled = true) => {
     try {
+      const piletVersionRepository = new PiletVersionRepository();
       await piletVersionRepository.updatePiletVersionEnabled(id, enabled);
     } catch (error) {
       throw getMessage('errors.piletVersion.update');
@@ -26,6 +28,7 @@ class PiletService {
 
   deletePiletVersion = async (id: number) => {
     try {
+      const piletVersionRepository = new PiletVersionRepository();
       await piletVersionRepository.deletePiletVersion(id);
     } catch (error) {
       throw getMessage('errors.piletVersion.delete');
@@ -40,6 +43,7 @@ class PiletService {
     link: string,
   ): Promise<PiletVersionWithPilet | null> => {
     // Find pilet by name
+    const piletRepository = new PiletRepository();
     let pilet = await piletRepository.findByName(piletName);
 
     if (!pilet) {
@@ -50,7 +54,7 @@ class PiletService {
         meta: {},
       });
     }
-
+    const piletVersionRepository = new PiletVersionRepository();
     // find piletVersion with piletId and pilet Version
     let pV = await piletVersionRepository.findByPiletIdAndVersion(
       pilet.id,

@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
 import { ADMIN, PILETS, VERSIONS } from '../endpoints/routes';
-import piletRepository from '../repository/pilet.repository';
-import piletVersionRepository from '../repository/piletVersion.repository';
+import { PiletVersionRepository } from '../repository/piletVersion.repository';
+import { PiletRepository } from '../repository/pilet.repository';
 
 const getPiletsAdminController = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ) => {
+  const piletVersionRepository = new PiletVersionRepository();
   const pilets = await piletVersionRepository.findManyDistinctPiletsVersion(
     false,
   );
@@ -25,6 +26,7 @@ const getPiletVersionsAdminController = async (
   next: NextFunction,
 ) => {
   const piletId = parseInt(req.params.id);
+  const piletVersionRepository = new PiletVersionRepository();
   const pilet = await piletVersionRepository.findById(piletId);
 
   if (!pilet) {
@@ -49,6 +51,7 @@ const triggerPiletAdminController = async (
 ) => {
   const piletId = parseInt(req.params.id);
 
+  const piletRepository = new PiletRepository();
   const pilet = await piletRepository.findById(piletId);
 
   if (!pilet) {
@@ -68,6 +71,9 @@ const triggerPiletVersionAdminController = async (
 ) => {
   const piletId = parseInt(req.params.piletId);
   const id = parseInt(req.params.id);
+
+  const piletRepository = new PiletRepository();
+  const piletVersionRepository = new PiletVersionRepository();
 
   const pilet = await piletRepository.findById(piletId);
   const piletV = await piletVersionRepository.findById(id);

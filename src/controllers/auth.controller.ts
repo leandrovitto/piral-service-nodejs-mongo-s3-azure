@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import { ADMIN, AUTH, LOGIN, PILETS, ROOT } from '../endpoints/routes';
 import { verifyToken } from '../middleware/auth.middleware';
+import { KeyRepository } from '../repository/key.repository';
 import { JWT_COOKIE, JWT_SECRET_KEY } from '../setting';
-import jwt from 'jsonwebtoken';
-import keyRepository from '../repository/key.repository';
 
 const loginGetController = async (
   req: Request,
@@ -30,7 +30,7 @@ const loginCreateController = async (
   if (!loginKey) {
     res.redirect(`${AUTH}${LOGIN}?error=Key not valid!`);
   }
-
+  const keyRepository = new KeyRepository();
   const result = await keyRepository.findKeyByKey(loginKey);
 
   if (!loginKey || !result) {
@@ -60,4 +60,4 @@ const logoutController = async (
   res.redirect(`${ROOT}`);
 };
 
-export { loginGetController, loginCreateController, logoutController };
+export { loginCreateController, loginGetController, logoutController };

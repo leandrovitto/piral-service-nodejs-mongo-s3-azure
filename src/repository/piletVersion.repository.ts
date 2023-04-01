@@ -1,15 +1,9 @@
-import { PiletVersion, Prisma, PrismaClient } from '@prisma/client';
+import { PiletVersion, Prisma } from '@prisma/client';
 import { getMessage, logger } from '../helpers';
 import { PiletVersionWithPilet } from '../types/model';
-import prismaSingleton from '../helpers/db.helper';
+import { BaseRepository } from './base.repository';
 
-class PiletVersionRepository {
-  private _client;
-
-  constructor(prisma_client: PrismaClient) {
-    this._client = prisma_client;
-  }
-
+export class PiletVersionRepository extends BaseRepository<PiletVersion> {
   create = async (
     payload: Omit<PiletVersion, 'id' | 'createdAt' | 'updatedAt'>,
   ): Promise<PiletVersionWithPilet> => {
@@ -65,7 +59,7 @@ class PiletVersionRepository {
   };
 
   disabledOthersPiletVersion = async (id: number, piletId: number) => {
-    await this._client.piletVersion.updateMany({
+    return await this._client.piletVersion.updateMany({
       data: {
         enabled: false,
       },
@@ -79,7 +73,7 @@ class PiletVersionRepository {
   };
 
   updatePiletVersionEnabled = async (id: number, enabled = true) => {
-    await this._client.piletVersion.update({
+    return await this._client.piletVersion.update({
       data: {
         enabled: enabled,
       },
@@ -143,8 +137,3 @@ class PiletVersionRepository {
     return pilets;
   };
 }
-
-const piletVersionRepository = new PiletVersionRepository(
-  prismaSingleton.getClient(),
-);
-export default piletVersionRepository;

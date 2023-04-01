@@ -1,31 +1,22 @@
-import { Keys, PrismaClient } from '@prisma/client';
-import prismaSingleton from '../helpers/db.helper';
+import { Keys } from '@prisma/client';
+import { BaseRepository } from './base.repository';
 
-class KeyRepository {
-  private _client;
-
-  constructor(prisma_client: PrismaClient) {
-    this._client = prisma_client;
-  }
-
-  create = async (key: string): Promise<Keys | null> => {
+export class KeyRepository extends BaseRepository<Keys> {
+  async create(item: Keys): Promise<Keys> {
     return await this._client.keys.create({
       data: {
-        key: key,
+        key: item.key,
       },
     });
-  };
+  }
 
-  findAll = async (): Promise<Keys[] | null> => {
+  async findAll(): Promise<Keys[]> {
     return await this._client.keys.findMany();
-  };
+  }
 
-  findKeyByKey = async (key: string): Promise<Keys | null> => {
+  async findKeyByKey(key: string): Promise<Keys | null> {
     return await this._client.keys.findUnique({
       where: { key: key },
     });
-  };
+  }
 }
-
-const keyRepository = new KeyRepository(prismaSingleton.getClient());
-export default keyRepository;

@@ -134,13 +134,6 @@ export type PiletMetadata = (
   | PiletMetadataVx
 ) &
   PiletMetadataBase;
-
-export interface Pilet {
-  meta: PiletMetadata;
-  root: string;
-  files: PackageFiles;
-}
-
 export interface PackageFiles {
   [file: string]: Buffer;
 }

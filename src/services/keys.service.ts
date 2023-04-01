@@ -1,6 +1,6 @@
 /* eslint-disable no-case-declarations */
 /* eslint-disable no-console */
-import keyRepository from '../repository/key.repository';
+import { KeyRepository } from '../repository/key.repository';
 import { authKeys } from '../setting';
 import { KeyProviders } from '../types/keysProviders.enum';
 
@@ -15,6 +15,7 @@ class KeyService {
         cachedKeys = envKeys.split(',');
         break;
       case KeyProviders.DATABASE:
+        const keyRepository = new KeyRepository();
         const k = await keyRepository.findAll();
         cachedKeys = k ? k?.map((i) => i.key) : [];
         break;
