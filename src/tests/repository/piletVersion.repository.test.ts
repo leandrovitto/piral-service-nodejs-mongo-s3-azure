@@ -1,9 +1,10 @@
-import { Pilet } from '@prisma/client';
+import { Pilet, PiletVersion } from '@prisma/client';
 import prisma from '../../helpers/prisma-client';
 import { PiletRepository } from '../../repository/pilet.repository';
 import { PiletVersionRepository } from '../../repository/piletVersion.repository';
 import { PILET_VERSION } from '../../setting';
 import { truncateDB } from '../utility';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('Test PiletVersionRepository', () => {
   let piletRepository: PiletRepository;
@@ -11,7 +12,7 @@ describe('Test PiletVersionRepository', () => {
 
   const version = '2.0.0';
   const piletPayload = {
-    name: 'pilet-test',
+    name: 'pilet-test' + uuidv4(),
     meta: {},
   };
 
@@ -26,7 +27,7 @@ describe('Test PiletVersionRepository', () => {
     enabled: true,
   };
   let pilet: Pilet;
-  //let piletVersion: PiletVersion;
+  let piletVersion: PiletVersion;
 
   beforeAll(async () => {
     await truncateDB();
@@ -35,7 +36,7 @@ describe('Test PiletVersionRepository', () => {
     pilet = await piletRepository.create(piletPayload);
     if (pilet) {
       piletVersionPayload.piletId = pilet.id;
-      // piletVersion = await piletVersionRepository.create(piletVersionPayload);
+      piletVersion = await piletVersionRepository.create(piletVersionPayload);
     }
   });
 
@@ -48,7 +49,7 @@ describe('Test PiletVersionRepository', () => {
       expect(result.version).toEqual(version);
     }
   });
-  /* 
+
   test('findById', async () => {
     const result = await piletVersionRepository.findById(piletVersion.id);
     if (result) {
@@ -101,9 +102,5 @@ describe('Test PiletVersionRepository', () => {
 
   test('findManyWithPiletId', async () => {
     expect(true).toEqual(true);
-  }); */
-  afterAll(async () => {
-    // await truncateDB(prisma);
-    prisma.$disconnect();
   });
 });

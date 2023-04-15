@@ -1,4 +1,6 @@
 module.exports = {
+  clearMocks: true,
+  preset: 'ts-jest',
   transform: {
     '^.+\\.ts?$': 'ts-jest',
   },
