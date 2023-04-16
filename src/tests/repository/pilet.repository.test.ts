@@ -1,11 +1,12 @@
 import { PiletRepository } from '../../repository/pilet.repository';
 import { truncateDB } from '../utility';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('Test PiletRepository', () => {
   let piletRepository: PiletRepository;
 
   const pilet = {
-    name: 'pilet-test',
+    name: 'pilet-test' + uuidv4(),
     meta: {},
   };
 

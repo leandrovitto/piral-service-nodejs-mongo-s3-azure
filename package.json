@@ -17,7 +17,8 @@
     "docker:down": "docker-compose down",
     "test:prisma:migrate": "dotenv -e .env.test -- npx prisma migrate deploy",
     "test": "yarn docker:up && yarn test:prisma:migrate && dotenv -e .env.test -- jest -i",
-    "test:dev": "yarn docker:up && yarn test:prisma:migrate && dotenv -e .env.test -- jest --watchAll"
+    "test:dev": "yarn docker:up && yarn test:prisma:migrate && dotenv -e .env.test -- jest --watchAll",
+    "start:docker": "npm run prisma:migrate && npm run prisma:seed && node build/index.js"
   },
   "repository": {
     "type": "git",
