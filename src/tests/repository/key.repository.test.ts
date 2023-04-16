@@ -1,12 +1,13 @@
 import { Keys } from '@prisma/client';
 import { KeyRepository } from '../../repository/key.repository';
 import { generateKey, truncateDB } from '../utility';
+import { v4 as uuidv4 } from 'uuid';
 
 describe('Test KeyRepository', () => {
   let keyRepository: KeyRepository;
 
   const keyObj: Keys = {
-    key: generateKey(),
+    key: generateKey() + uuidv4(),
     id: 0,
     createdAt: null,
     updatedAt: null,

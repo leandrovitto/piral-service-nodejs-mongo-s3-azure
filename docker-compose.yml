@@ -1,0 +1,41 @@
+# Set the version of docker compose to use
+version: '3.9'
+
+# The containers that compose the project
+services:
+  postgres:
+    image: postgres:13
+    restart: always
+    container_name: db-services
+    ports:
+      - "5440:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: piral
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+  web:
+    build: .
+    container_name: api
+    volumes:
+      - .:/src
+      - /node_modules
+    ports:
+      - "9999:9999"
+    depends_on:
+      - postgres
+    restart: always
+  db_test:
+    image: postgres:13
+    restart: always
+    container_name: db-integration-tests
+    ports:
+      - '5441:5432'
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: tests
+
+volumes:
+  postgres-data:
