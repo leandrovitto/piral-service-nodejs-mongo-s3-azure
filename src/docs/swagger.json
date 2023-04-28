@@ -1,0 +1,146 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Pilet Service",
+    "version": "1.0.0",
+    "title": "Pilet Service",
+    "license": {
+      "name": "MIT License",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "basePath": "/api",
+  "schemes": ["http", "https"],
+  "produces": ["application/json"],
+  "consumes": ["application/json"],
+  "securityDefinitions": {
+    "Token": {
+      "description": "For accessing the protected API resources.This Auth Key must then be used for all protected resources by passing it in via the 'Authorization' header.\n\nA Auth Key is generated.\n\nThe following format must be in the 'Authorization' header :\n\n    Token: basic 7dc236073f36db9231a4a3151a08369eaa65b16f5f343a2815e24c2c8af85ee4\n    \n",
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "paths": {
+    "/v1/pilet": {
+      "get": {
+        "summary": "Get list of pilets",
+        "description": "et list of pilets",
+        "tags": ["Pilet"],
+        "operationId": "getPilets",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/MultiplePiletResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Pubblish pilet version",
+        "description": "Pubblish pilet version",
+        "tags": ["Pilet"],
+        "operationId": "postPilet",
+        "consumes": "multipart/form-data",
+        "security": [
+          {
+            "Token": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "file",
+            "in": "formData",
+            "type": "file",
+            "required": false,
+            "description": "Credentials to use"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SuccessResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "schema": {
+              "$ref": "#/definitions/DefaultResponse"
+            }
+          },
+          "422": {
+            "description": "Missed file",
+            "schema": {
+              "$ref": "#/definitions/DefaultResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Pilet": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "link": {
+          "type": "string"
+        },
+        "requireRef": {
+          "type": "string"
+        },
+        "integrity": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        }
+      }
+    },
+    "MultiplePiletResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Pilet"
+          }
+        }
+      }
+    },
+    "DefaultResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "default": "false"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "SuccessResponse": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "$ref": "#/definitions/Pilet"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

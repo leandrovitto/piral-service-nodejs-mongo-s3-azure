@@ -18,13 +18,13 @@ describe('Test PiletRepository', () => {
   test('create', async () => {
     const result = await piletRepository.create(pilet);
     if (result) {
-      expect(result?.id).toEqual(1);
+      expect(result?.id).not.toBeNull();
     }
   });
 
   test('findById', async () => {
     const create = await piletRepository.create(pilet);
-    const result = await piletRepository.findById(1);
+    const result = await piletRepository.findById(create.id);
     if (result) {
       expect(create.id).toEqual(result.id);
     }

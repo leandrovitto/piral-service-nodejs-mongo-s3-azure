@@ -21,11 +21,15 @@ export function verifyToken(req: Request) {
     : false;
 }
 
+type RequestAuth = { headers: { authorization: string } } & Request;
+
 export const checkAuth =
   (...scopes: Array<string>): RequestHandler =>
   async (req: Request, res: Response, next: NextFunction) => {
-    const authorized = await checkKey(req.headers.authorization, scopes);
-
+    const authorized = await checkKey(
+      (req as RequestAuth).headers.authorization,
+      scopes,
+    );
     if (!authorized) {
       return res.status(401).json({
         success: false,
