@@ -1,6 +1,6 @@
 {
   "name": "piral-service-nodejs-mongo-s3-azure",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple Node.js sample pilet feed service for use with Piral. 🚀",
   "main": "index.js",
   "scripts": {
