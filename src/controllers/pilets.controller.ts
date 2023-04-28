@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-catch */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
@@ -87,12 +88,17 @@ const publishPiletController = async (
           });
         }
       })
-      .on('error', (err) => {
+      .on('error', (err: any) => {
         res.status(400).json({
           success: false,
           message: err,
         });
       });
+  } else {
+    res.status(422).json({
+      success: false,
+      message: 'Missed file!',
+    });
   }
 };
 

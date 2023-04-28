@@ -44,7 +44,13 @@ Visit site on url : ```http://localhost:9999/```
 
 # Api List
 
-> documentation TODO
+Go to Link, Swagger Ui 
+
+```
+http://localhost:9999/api-docs
+```
+
+![Admin Panel](/doc/swagger.png "Admin Panel")
 
 # Setup configuration
 

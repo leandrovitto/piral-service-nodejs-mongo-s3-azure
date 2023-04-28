@@ -5,6 +5,8 @@ import cors from 'cors';
 import express from 'express';
 import * as core from 'express-serve-static-core';
 import responseTime from 'response-time';
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './docs/swagger.json';
 import routes from './endpoints';
 import { logger } from './helpers';
 import { KeyService } from './services/keys.service';
@@ -33,6 +35,8 @@ app.use(
   `/${storage.localSettings.bucket}`,
   express.static(storage.localSettings.bucket),
 );
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //Routing
 routes(app);
